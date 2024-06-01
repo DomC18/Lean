@@ -1,4 +1,13 @@
-import tkinter as tk
+import customtkinter as ctk
 
-root : tk.Tk
+root : ctk.CTk
 
+def init() -> None:
+    root = ctk.CTk("limegreen")
+    root.title = "Lean"
+    root.geometry("800x450+0+0")
+    root.resizable(width=True, height=True)
+
+
+
+    root.mainloop()

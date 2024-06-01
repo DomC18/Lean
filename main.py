@@ -1,7 +1,7 @@
 import ui
 
 def main():
-    pass
+    ui.init()
 
 if __name__ == '__main__':
     main()
