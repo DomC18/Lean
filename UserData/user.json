@@ -7,73 +7,73 @@
         {
             "proj1": {
                 "name": "proj1",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj2": {
                 "name": "proj2",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj3": {
                 "name": "proj3",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj4": {
                 "name": "proj4",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj5": {
                 "name": "proj1",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj6": {
                 "name": "proj2",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj7": {
                 "name": "proj3",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj8": {
                 "name": "proj4",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj9": {
                 "name": "proj1",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj10": {
                 "name": "proj2",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj11": {
                 "name": "proj3",
-                "desc": "desc"
+                "elements": "elements"
             }
         },
         {
             "proj12": {
                 "name": "proj4",
-                "desc": "desc"
+                "elements": "elements"
             }
         }
     ]

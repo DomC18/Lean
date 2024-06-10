@@ -3,12 +3,19 @@ from tkinter import messagebox
 import globalvariables as gv
 import customtkinter as ctk
 from projbox import ProjBox 
+from project import Project
 import projutil
 
 def rgb_to_hex(rgb:tuple) -> str:
     return '#{:02x}{:02x}{:02x}'.format(*rgb)
 
 maroon = rgb_to_hex((71, 0, 0))
+
+def destroy_children() -> None:
+    try:
+        for widget in gv.window.winfo_children():
+            widget.destroy()
+    except: pass
 
 def init_window() -> None:
     gv.window = ctk.CTk("#470000")
@@ -21,10 +28,7 @@ def init_window() -> None:
     gv.window.geometry(f"{width}x{height}+{int(horiz_offset)}+{int(vert_offset)}")
 
 def init() -> None:
-    try:
-        for widget in gv.window.winfo_children():
-            widget.destroy()
-    except: pass
+    destroy_children()
 
     gv.name = ""
     gv.username = ""
@@ -54,16 +58,13 @@ def init() -> None:
     gv.window.mainloop()
 
 def project_select() -> None:
-    try:
-        for widget in gv.window.winfo_children():
-            widget.destroy()
-    except: pass
+    destroy_children()
     
     back_button = ctk.CTkButton(gv.window, text="← Back to Login", font=("Arial", 40, "bold"))
     back_button.configure(command=init)
     back_button.place(relx=0.0001*9, rely=0.0001*16, anchor="nw")
     new_project_button = ctk.CTkButton(gv.window, text="New Project", font=("Arial", 90, "bold"))
-    new_project_button.configure(command=proj_setup)
+    new_project_button.configure(command=new_project)
     new_project_button.place(relx=0.5, rely=0.33, anchor="center")
     old_project_button = ctk.CTkButton(gv.window, text="Old Project", font=("Arial", 90, "bold"))
     old_project_button.configure(command=lambda b=back_button, n=new_project_button, o=old_project_button : choose_project(b,n,o))
@@ -77,7 +78,7 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
 
     boxframe = ctk.CTkFrame(gv.window, width=1500, height=800)
     boxframe.place(anchor="s", relx=0.5, rely=1)
-    projbox = ProjBox(proj_setup, master=boxframe, root=gv.window, width=1500, height=800, bg=maroon)
+    projbox = ProjBox(master=boxframe, root=gv.window, width=1500, height=800, bg=maroon)
     projbox.list_index = 0
     for idx, proj in enumerate(gv.user_projects):
         if idx < projbox.list_index:
@@ -97,12 +98,13 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
     o.place_forget()
     b.configure(command=project_select, text="← Project Select")
     b.place(relx=0.0001*9, rely=0.0001*16, anchor="nw")
-    b.tkraise()
+    b.tkraise()    
 
-def proj_setup() -> None:
-    try:
-        for widget in gv.window.winfo_children():
-            widget.destroy()
-    except: pass
-
-    
+def new_project() -> None:
+    gv.curr_project = Project(
+        window=gv.window,
+        width=gv.window.winfo_width(),
+        height=gv.window.winfo_height(),
+        bg_color="#470000",
+        name="project",
+    )

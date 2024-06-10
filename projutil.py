@@ -1,3 +1,4 @@
+from project import Project
 import globalvariables as gv
 import constants
 import json
@@ -22,17 +23,25 @@ def update_user_projects():
 
 def load_project(projectname:str) -> None:
     proj_idx = gv.user_projects.index(projectname)
+    data:dict = {}
+    file_dir = rf"{constants.USERDATADIR}{gv.name}.json"
+
+    try:
+        with open(file_dir, "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        return
     
-    """
     desired_project = data["projects"][proj_idx][projectname]
     gv.curr_project = Project(
-        desired_project[name],
-        desired_project[desc],
-        desired_project[etc],
+        gv.window,
+        gv.window.winfo_width(),
+        gv.window.winfo_height(),
+        "#470000",
+        desired_project["name"],
     )
-    elements = desired_project[elements]
-    gv.curr_project.build_elements(gv.curr_project, elements)
-    """
+    elements = desired_project["elements"]
+    gv.curr_project.build_elements(elements)
     
 def save_project() -> None:
     data:dict = {}

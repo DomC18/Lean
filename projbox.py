@@ -3,13 +3,12 @@ import tkinter as tk
 import projutil
 
 class ProjBox(tk.Frame):
-    def __init__(self, setup_func, master=None, root=tk.Tk, width=0, height=0, bg="white", **kwargs) -> None:
+    def __init__(self, master=None, root=tk.Tk, width=0, height=0, bg="white", **kwargs) -> None:
         super().__init__(master, **kwargs)
 
         self.canvas = tk.Canvas(self, width=width, height=height, bg=bg)
         self.bg_color = self.rgb_to_hex((240, 240, 240))
         self.list_frame = tk.Frame(self.canvas)
-        self.setup_func = setup_func
         self.root = root
         self.bg = bg
         self.canvas.pack(side="left", fill="both", expand=True)
@@ -63,4 +62,3 @@ class ProjBox(tk.Frame):
     
     def select_proj(self, proj_name:str):
         projutil.load_project(proj_name)
-        self.setup_func()
