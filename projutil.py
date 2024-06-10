@@ -3,9 +3,9 @@ import constants
 import json
 import os
 
-def load_project(filename:str, projectname:str) -> None:
+def update_user_projects():
     data:dict = {}
-    file_dir = rf"{filename}"
+    file_dir = rf"{constants.USERDATADIR}{gv.name}.json"
 
     try:
         with open(file_dir, "r") as file:
@@ -16,15 +16,27 @@ def load_project(filename:str, projectname:str) -> None:
     gv.user_projects.clear()
     names = []
     for proj in data["projects"]:
-        key = proj.keys()
+        key = str(proj.keys())[12:-3]
         names.append(key)
-        if projectname == key:
-            gv.curr_project = proj[key]
     gv.user_projects = names.copy()
 
+def load_project(projectname:str) -> None:
+    proj_idx = gv.user_projects.index(projectname)
+    
+    """
+    desired_project = data["projects"][proj_idx][projectname]
+    gv.curr_project = Project(
+        desired_project[name],
+        desired_project[desc],
+        desired_project[etc],
+    )
+    elements = desired_project[elements]
+    gv.curr_project.build_elements(gv.curr_project, elements)
+    """
+    
 def save_project() -> None:
     data:dict = {}
-    file_dir = constants.USER_PROJECTS_PATH + rf"\{gv.project.name}.json"
+    file_dir = constants.USER_PROJECTS_PATH + rf"{gv.project.name}.json"
     project_data = []
     for proj in gv.user_projects:
         project_data.append({proj.name: proj.as_dict()})

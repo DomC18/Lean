@@ -3,5 +3,78 @@
         "username": "user",
         "password": "user"
     },
-    "projects": []
+    "projects": [
+        {
+            "proj1": {
+                "name": "proj1",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj2": {
+                "name": "proj2",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj3": {
+                "name": "proj3",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj4": {
+                "name": "proj4",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj5": {
+                "name": "proj1",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj6": {
+                "name": "proj2",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj7": {
+                "name": "proj3",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj8": {
+                "name": "proj4",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj9": {
+                "name": "proj1",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj10": {
+                "name": "proj2",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj11": {
+                "name": "proj3",
+                "desc": "desc"
+            }
+        },
+        {
+            "proj12": {
+                "name": "proj4",
+                "desc": "desc"
+            }
+        }
+    ]
 }

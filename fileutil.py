@@ -1,10 +1,10 @@
-import globalvariables
+import globalvariables as gv
 import tkinter as tk
 import constants
 import projutil
 import json
 
-def verify_existing(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password_entry:tk.Entry, first_label:tk.Label, user_label:tk.Label, password_label:tk.Label, task_func) -> None:
+def verify_existing(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password_entry:tk.Entry, first_label:tk.Label, user_label:tk.Label, password_label:tk.Label, proj_func) -> None:
     data:dict = {}
     name = first_entry.get()
 
@@ -32,22 +32,21 @@ def verify_existing(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, passw
         with open(file_dir, "r") as file:
             data = json.load(file)
     except FileNotFoundError:
-        register_new(root, first_entry, user_entry, password_entry, task_func)
+        register_new(root, first_entry, user_entry, password_entry, proj_func)
         return
         
     username = data[name]["username"]
     password = data[name]["password"]
 
-    globalvariables.name = name
-    globalvariables.username = username
-    globalvariables.password = password
+    gv.name = name
+    gv.username = username
+    gv.password = password
 
     if username == user_entry.get() and password == password_entry.get():
-        root.destroy()
-        projutil.load_creds()
-        task_func()
+        projutil.update_user_projects()
+        proj_func()
 
-def register_new(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password_entry:tk.Entry, task_func) -> None:
+def register_new(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password_entry:tk.Entry, proj_func) -> None:
     name = first_entry.get()
 
     if name == "":
@@ -68,12 +67,11 @@ def register_new(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password
         ]
     }
 
-    globalvariables.name = name
-    globalvariables.username = username
-    globalvariables.password = password
+    gv.name = name
+    gv.username = username
+    gv.password = password
 
     with open(file_dir, "w") as file:
         json.dump(user_data, file, indent=4)
 
-    root.destroy()
-    task_func()
+    proj_func()
