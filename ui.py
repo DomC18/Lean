@@ -27,7 +27,7 @@ def init_window() -> None:
     vert_offset = (gv.window.winfo_screenheight() - height) / 2
     gv.window.geometry(f"{width}x{height}+{int(horiz_offset)}+{int(vert_offset)}")
 
-def init() -> None:
+def login_screen() -> None:
     destroy_children()
 
     gv.name = ""
@@ -61,7 +61,7 @@ def project_select() -> None:
     destroy_children()
     
     back_button = ctk.CTkButton(gv.window, text="← Back to Login", font=("Arial", 40, "bold"))
-    back_button.configure(command=init)
+    back_button.configure(command=login_screen)
     back_button.place(relx=0.0001*9, rely=0.0001*16, anchor="nw")
     new_project_button = ctk.CTkButton(gv.window, text="New Project", font=("Arial", 90, "bold"))
     new_project_button.configure(command=new_project)

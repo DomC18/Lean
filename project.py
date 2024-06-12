@@ -5,16 +5,15 @@ import constants
 class Project(ctk.CTkFrame):
     def __init__(self, window:ctk.CTk, width=0, height=0, bg_color="#470000", name="", **kwargs) -> None:
         super().__init__(master=window, width=width, height=height, bg_color=bg_color, **kwargs)
-        self.place(anchor="center", relx=0.5, rely=0.5)
-
         self.window = window
         self.width = width
         self.height = height
         self.bg_color = bg_color
         self.name = name
-
+        self.place(anchor="center", relx=0.5, rely=0.5)
         self.util_frame = ctk.CTkFrame(master=self, width=width, height=height*0.1, fg_color=bg_color, border_width=2)
         self.util_frame.place(anchor="n", relx=0.5, rely=0)
+
         self.file_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="File", font=("Arial", 50, "bold"), border_width=1)
         self.file_button.configure(command=self.file_expand)
         self.file_button.place(anchor="w", relx=0, rely=0.5)
@@ -26,9 +25,20 @@ class Project(ctk.CTkFrame):
         self.save_button.configure(command=self.save)
         self.saveas_button = ctk.CTkButton(master=self, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Save As", font=("Arial", 50, "bold"), border_width=1)
         self.saveas_button.configure(command=self.save_as)
+        self.just_saved = True
+        self.f_collapse = None
+
         self.edit_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Edit", font=("Arial", 50, "bold"), border_width=1)
         self.edit_button.configure(command=self.edit_expand)
         self.edit_button.place(anchor="w", relx=0.1, rely=0.5)
+        self.cut_button = ctk.CTkButton(master=self, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Cut", font=("Arial", 50, "bold"), border_width=1)
+        self.cut_button.configure(command=self.cut)
+        self.copy_button = ctk.CTkButton(master=self, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Copy", font=("Arial", 50, "bold"), border_width=1)
+        self.copy_button.configure(command=self.copy)
+        self.paste_button = ctk.CTkButton(master=self, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Paste", font=("Arial", 50, "bold"), border_width=1)
+        self.paste_button.configure(command=self.paste)
+        self.e_collapse = None
+
         self.import_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Import", font=("Arial", 50, "bold"), border_width=1)
         self.import_button.configure(command=self.import_img)
         self.import_button.place(anchor="w", relx=0.2, rely=0.5)
@@ -52,7 +62,7 @@ class Project(ctk.CTkFrame):
         self.drawing_frame.place(anchor="n", relx=0.5, rely=0.28)
     
     def file_expand(self) -> None:
-        self.file_button.configure(command=self.file_collapse)
+        self.file_button.configure(command=lambda e=None : self.file_collapse(e))
         self.new_button.place(anchor="w", relx=0, rely=0.145)
         self.new_button.tkraise()
         self.open_button.place(anchor="w", relx=0, rely=0.24)
@@ -61,16 +71,55 @@ class Project(ctk.CTkFrame):
         self.save_button.tkraise()
         self.saveas_button.place(anchor="w", relx=0, rely=0.43)
         self.saveas_button.tkraise()
+        self.f_collapse = self.window.bind("<Button-1>", self.file_collapse)
 
-    def file_collapse(self) -> None:
-        self.file_button.configure(command=self.file_expand)
-        self.new_button.place_forget()
-        self.open_button.place_forget()
-        self.save_button.place_forget()
-        self.saveas_button.place_forget()
+    def file_collapse(self, event) -> None:
+        self.window.unbind("<Button-1>", self.f_collapse)
+        if event:
+            if event.widget not in (self.new_button, self.open_button, self.save_button, self.saveas_button):
+                self.file_button.configure(command=self.file_expand)
+                self.new_button.place_forget()
+                self.open_button.place_forget()
+                self.save_button.place_forget()
+                self.saveas_button.place_forget()
+        else:
+            self.file_button.configure(command=self.file_expand)
+            self.new_button.place_forget()
+            self.open_button.place_forget()
+            self.save_button.place_forget()
+            self.saveas_button.place_forget()
+        self.f_collapse = None
+
+    def edit_expand(self) -> None:
+        self.edit_button.configure(command=lambda e=None : self.edit_collapse(e))
+        self.cut_button.place(anchor="w", relx=0.1, rely=0.145)
+        self.cut_button.tkraise()
+        self.copy_button.place(anchor="w", relx=0.1, rely=0.24)
+        self.copy_button.tkraise()
+        self.paste_button.place(anchor="w", relx=0.1, rely=0.335)
+        self.paste_button.tkraise()
+        self.e_collapse = self.window.bind("<Button-1>", self.edit_collapse)
+
+    def edit_collapse(self, event) -> None:
+        self.window.unbind("<Button-1>", self.e_collapse)
+        if event:
+            if event.widget not in (self.cut_button, self.copy_button, self.paste_button):
+                self.edit_button.configure(command=self.edit_expand)
+                self.cut_button.place_forget()
+                self.copy_button.place_forget()
+                self.paste_button.place_forget()
+        else:
+            self.edit_button.configure(command=self.edit_expand)
+            self.cut_button.place_forget()
+            self.copy_button.place_forget()
+            self.paste_button.place_forget()
+        self.e_collapse = None
 
     def new_project(self) -> None:
-        ...
+        if self.just_saved:
+            for widget in self.drawing_frame.winfo_children():
+                widget.destroy()
+            self.just_saved = False
 
     def open_project(self) -> None:
         ...
@@ -79,12 +128,6 @@ class Project(ctk.CTkFrame):
         ...
 
     def save_as(self) -> None:
-        ...
-
-    def edit_expand(self) -> None:
-        ...
-
-    def edit_collapse(self) -> None:
         ...
 
     def cut(self) -> None:
