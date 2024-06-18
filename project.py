@@ -1,5 +1,9 @@
+from tkinter import messagebox
 import globalvariables as gv
 import customtkinter as ctk
+import constants
+import json
+import os
 
 class Element:
     def __init__(self, 
@@ -39,6 +43,7 @@ class Element:
                 wraplength:int = 0, 
             ) -> None:
         
+        self.editable = None
         self.typ = typ
         self.relx = relx
         self.rely = rely
@@ -70,13 +75,39 @@ class Element:
         self.anchor = anchor
         self.wraplength = wraplength
 
-        self.kwargs = [self.window, self.width, self,height, self.corner_radius, self.border_width, self.border_spacing, self.bg_color, self.fg_color, self.hover_color, 
-                       self.border_color, self.text_color, self.text_color_disabled, self.placeholder_text_color, self.background_corner_colors, self.round_width_to_even_numbers, self.round_height_to_even_numbers,
-                       self.text, self.textvariable, self.state, self.placeholder_text, self.font, self.image, self.compound, self.hover, self.command, self.anchor, self.wraplength]
+        self.kwargs = {"width": self.width, 
+                       "height": self.height, 
+                       "corner_radius": self.corner_radius, 
+                       "border_width": self.border_width, 
+                       "border_spacing": self.border_spacing, 
+                       "bg_color": self.bg_color, 
+                       "fg_color": self.fg_color, 
+                       "hover_color": self.hover_color, 
+                       "border_color": self.border_color, 
+                       "text_color": self.text_color, 
+                       "text_color_disabled": self.text_color_disabled, 
+                       "placeholder_text_color": self.placeholder_text_color, 
+                       "background_corner_colors": self.background_corner_colors, 
+                       "round_width_to_even_numbers": self.round_width_to_even_numbers, 
+                       "round_height_to_even_numbers": self.round_height_to_even_numbers,
+                       "text": self.text, 
+                       "state": self.state, 
+                       "placeholder_text": self.placeholder_text, 
+                       "font": self.font, 
+                       "image": self.image, 
+                       "compound": self.compound, 
+                       "hover": self.hover, 
+                       "command": self.command, 
+                       "anchor": self.anchor, 
+                       "wraplength": self.wraplength
+        }
 
         self.apply_config()
 
     def apply_config(self) -> None:
+        try: self.editable.destroy()
+        except: pass
+
         if self.typ == "label":
             self.editable = ctk.CTkLabel(self.window, self.width, self.height, self.corner_radius, self.bg_color, self.fg_color, self.text_color, self.text_color_disabled, self.text, self.font, self.image, self.compound, self.anchor, self.wraplength)
         elif self.typ == "entry":
@@ -91,11 +122,11 @@ class Element:
         self.editable.place_forget()
 
     def __repr__(self) -> str:
-        return f"type: {self.typ}\nrelx: {self.relx}\nrely: {self.rely}\nkwargs: {self.kwargs}\n"
+        return f"typ: {self.typ}\nrelx: {self.relx}\nrely: {self.rely}\nkwargs: {self.kwargs}\n"
 
     def as_dict(self) -> dict:
         return {
-            "type": self.typ,
+            "typ": self.typ,
             "relx": str(self.relx),
             "rely": str(self.rely),
             "kwargs": self.kwargs
@@ -107,10 +138,10 @@ class Project:
         self.name = name
         self.elements = elements
         
-    def change_name(self, new_name:str) -> None:
+    def name_to(self, new_name:str) -> None:
         self.name = new_name
     
-    def change_element(self, old_element:Element, new_element:Element) -> None:
+    def element_to(self, old_element:Element, new_element:Element) -> None:
         try: self.elements[self.elements.index(old_element)] = new_element
         except: pass
     
@@ -124,14 +155,14 @@ class Project:
         for element in elements:
             self.elements.append(Element(typ=element["typ"], relx=float(element["relx"]), rely=float(element["rely"]), **element["kwargs"]))
 
-    def build_and_place(self, parent:ctk.CTkFrame, elements:list) -> None:
-        self.elements.clear()
-        for idx, element in enumerate(elements):
-            self.elements.append(Element(typ=element["typ"], relx=float(element["relx"]), rely=float(element["rely"]), window=parent, **element["kwargs"]))
-            self.elements[idx].place()
+    def place_elements(self, parent:ctk.CTkFrame) -> None:
+        for element in self.elements:
+            element.window = parent
+            element.apply_config()
+            element.place()
 
     def __repr__(self) -> str:
-        return f"name: {self.name}\nelements: {len(self.elements)}\n"
+        return f"name: {self.name}\nelements: {self.elements}\n"
 
     def as_dict(self) -> dict:
         return {
@@ -143,14 +174,13 @@ class Project:
 
 
 class ProjectContainer(ctk.CTkFrame):
-    def __init__(self, window:ctk.CTk, width=0, height=0, bg_color="#470000", project=Project(), **kwargs) -> None:
+    def __init__(self, window:ctk.CTk, width=constants.WIDTH, height=constants.HEIGHT, bg_color=constants.MAROON, project=Project(), **kwargs) -> None:
         super().__init__(master=window, width=width, height=height, bg_color=bg_color, **kwargs)
         self.window = window
         self.width = width
         self.height = height
         self.bg_color = bg_color
         self.project = project
-        self.place(anchor="center", relx=0.5, rely=0.5)
         self.util_frame = ctk.CTkFrame(master=self, width=width, height=height*0.1, fg_color=bg_color, border_width=2)
         self.util_frame.place(anchor="n", relx=0.5, rely=0)
 
@@ -266,12 +296,41 @@ class ProjectContainer(ctk.CTkFrame):
         self.just_saved = True
 
     def save(self) -> None:
-        ...
-        self.just_saved = True
+        if self.project.name == "":
+            self.save_as()
+            return
+
+        data:dict = {}
+        file_dir = rf"{constants.USERDATADIR}{gv.name}.json"
+        project_data = []
+        for proj in gv.user_projects:
+            project_data.append(proj.as_dict())
+
+        data = {
+            gv.name: {
+                "username": gv.username,
+                "password": gv.password
+            },
+            "projects": project_data
+        }
+
+        try:
+            os.remove(file_dir)
+        except FileNotFoundError:
+            pass
+        
+        with open(file_dir, "w") as file:
+            json.dump(data, file, indent=4)
 
     def save_as(self) -> None:
-        ...
-        self.just_saved = True
+        name = simpledialog.askstring("Project Name", "Please enter a project name:")
+        elements = self.project.elements
+        if name:
+            self.project = None
+            self.project = Project(name, elements)
+        else:
+            messagebox.showwarning("Input Error", "No project name entered.")
+        self.save()
 
     def cut(self) -> None:
         ...

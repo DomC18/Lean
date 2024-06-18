@@ -1,4 +1,4 @@
-from project import ProjectContainer, Project
+from project import Project, ProjectContainer
 import globalvariables as gv
 import constants
 import json
@@ -28,35 +28,19 @@ def load_project(projectname:str) -> None:
             break
     if proj_idx == -1:
         return
-    
-    data:dict = {}
-    file_dir = rf"{constants.USERDATADIR}{gv.name}.json"
-
-    try:
-        with open(file_dir, "r") as file:
-            data = json.load(file)
-    except FileNotFoundError:
-        return
-    
-    desired_project = data["projects"][proj_idx][projectname]
-    name = desired_project["name"]
-    elements = desired_project["elements"]
-    
-    gv.curr_project = Project(name)
-    gv.proj_container = ProjectContainer(
-        window=gv.window,
-        width=constants.WIDTH,
-        height=constants.HEIGHT,
-        project=gv.curr_project
-    )
-    gv.curr_project.build_and_place(gv.proj_container.drawing_frame, elements)
+        
+    gv.proj_container = ProjectContainer(gv.window)
+    gv.proj_container.place(anchor="center", relx=0.5, rely=0.5)
+    gv.curr_project = gv.user_projects[proj_idx]
+    gv.proj_container.project = gv.curr_project
+    gv.curr_project.place_elements(gv.proj_container.drawing_frame)
     
 def save_project() -> None:
     data:dict = {}
-    file_dir = constants.USER_PROJECTS_PATH + rf"{gv.project.name}.json"
+    file_dir = rf"{constants.USERDATADIR}{gv.name}.json"
     project_data = []
     for proj in gv.user_projects:
-        project_data.append({proj.name: proj.as_dict()})
+        project_data.append(proj.as_dict())
 
     data = {
         gv.name: {

@@ -8,11 +8,6 @@ from project import ProjectContainer, Project
 import constants
 import projutil
 
-def rgb_to_hex(rgb:tuple) -> str:
-    return '#{:02x}{:02x}{:02x}'.format(*rgb)
-
-maroon = rgb_to_hex((71, 0, 0))
-
 def destroy_children() -> None:
     try:
         for widget in gv.window.winfo_children():
@@ -20,7 +15,6 @@ def destroy_children() -> None:
     except: pass
 
 def init_window() -> None:
-    gv.window = ctk.CTk("#470000")
     gv.window.title("Lean")
     gv.window.resizable(width=False, height=False)
     horiz_offset = (get_monitors()[0].width - constants.WIDTH) / 2
@@ -34,17 +28,17 @@ def login_screen() -> None:
     gv.username = ""
     gv.password = ""
 
-    logo_label = ctk.CTkLabel(gv.window, text="Lean Login", font=("Arial", 120, "bold"), bg_color=maroon, width=1200, height=150)
+    logo_label = ctk.CTkLabel(gv.window, text="Lean Login", font=("Arial", 120, "bold"), bg_color=constants.MAROON, width=1200, height=150)
     logo_label.place(relx=0.5, rely=0, anchor="n")
-    firstname_label = ctk.CTkLabel(gv.window, text="*First Name:", font=("Arial", 100, "bold"), bg_color=maroon, width=100, height=100)
+    firstname_label = ctk.CTkLabel(gv.window, text="*First Name:", font=("Arial", 100, "bold"), bg_color=constants.MAROON, width=100, height=100)
     firstname_label.place(relx=0.5, rely=0.325, anchor="e")
     firstname_entry = ctk.CTkEntry(gv.window, font=("Arial", 100), width=600, height=165)
     firstname_entry.place(relx=0.5, rely=0.325, anchor="w")
-    username_label = ctk.CTkLabel(gv.window, text="*Username:", font=("Arial", 100, "bold"), bg_color=maroon, width=100, height=100)
+    username_label = ctk.CTkLabel(gv.window, text="*Username:", font=("Arial", 100, "bold"), bg_color=constants.MAROON, width=100, height=100)
     username_label.place(relx=0.5, rely=0.5, anchor="e")
     username_entry = ctk.CTkEntry(gv.window, font=("Arial", 100), width=600, height=165)
     username_entry.place(relx=0.5, rely=0.5, anchor="w")
-    password_label = ctk.CTkLabel(gv.window, text="*Password:", font=("Arial", 100, "bold"), bg_color=maroon, width=100, height=100)
+    password_label = ctk.CTkLabel(gv.window, text="*Password:", font=("Arial", 100, "bold"), bg_color=constants.MAROON, width=100, height=100)
     password_label.place(relx=0.5, rely=0.675, anchor="e")
     password_entry = ctk.CTkEntry(gv.window, font=("Arial", 100), width=600, height=165)
     password_entry.place(relx=0.5, rely=0.675, anchor="w")
@@ -78,7 +72,7 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
 
     boxframe = ctk.CTkFrame(gv.window, width=1500, height=800)
     boxframe.place(anchor="s", relx=0.5, rely=1)
-    projbox = ProjBox(master=boxframe, root=gv.window, width=1500, height=800, bg=maroon)
+    projbox = ProjBox(master=boxframe, root=gv.window, width=1500, height=800, bg=constants.MAROON)
     projbox.list_index = 0
     for idx, proj in enumerate(gv.user_projects):
         if idx < projbox.list_index:
@@ -87,10 +81,10 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
             break
         projbox.insert(idx-projbox.list_index, proj)
     projbox.pack()
-    up_button = ctk.CTkButton(boxframe, text="↑", bg_color=maroon, fg_color="black", font=("Arial", 46, "bold"), height=150)
+    up_button = ctk.CTkButton(boxframe, text="↑", bg_color=constants.MAROON, fg_color="black", font=("Arial", 46, "bold"), height=150)
     up_button.configure(command=projbox.move_up)
     up_button.place(relx=1-(0.0001*16), rely=0+(0.0001*9), anchor="ne")
-    down_button = ctk.CTkButton(boxframe, text="↓", bg_color=maroon, fg_color="black", font=("Arial", 46, "bold"), height=150)
+    down_button = ctk.CTkButton(boxframe, text="↓", bg_color=constants.MAROON, fg_color="black", font=("Arial", 46, "bold"), height=150)
     down_button.configure(command=projbox.move_down)
     down_button.place(relx=1-(0.0001*16), rely=1-(0.0001*9), anchor="se")
     
@@ -101,11 +95,8 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
     b.tkraise()    
 
 def new_project() -> None:
-    gv.curr_project = Project()
-    gv.proj_container = ProjectContainer(
-        window=gv.window,
-        width=gv.window.winfo_width(),
-        height=gv.window.winfo_height(),
-        bg_color="#470000",
-        project=gv.curr_project
-    )
+    gv.user_projects.append(Project())
+    gv.curr_project = gv.user_projects[-1]
+    gv.proj_container = ProjectContainer(gv.window)
+    gv.proj_container.project = gv.curr_project
+    gv.proj_container.place(anchor="center", relx=0.5, rely=0.5)

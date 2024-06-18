@@ -1,7 +1,8 @@
 from project import Project, ProjectContainer
 import customtkinter as ctk
+import constants
 
-window:ctk.CTk
+window = ctk.CTk(constants.MAROON)
 
 name:str
 username:str

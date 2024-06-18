@@ -13,9 +13,31 @@
                         "relx": "0.25",
                         "rely": "0.5",
                         "kwargs": {
+                            "width": 140,
+                            "height": 28,
+                            "corner_radius": null,
+                            "border_width": null,
+                            "border_spacing": 2,
+                            "bg_color": "transparent",
                             "fg_color": "red",
+                            "hover_color": null,
+                            "border_color": null,
                             "text_color": "white",
-                            "text": "1"
+                            "text_color_disabled": null,
+                            "placeholder_text_color": null,
+                            "background_corner_colors": null,
+                            "round_width_to_even_numbers": null,
+                            "round_height_to_even_numbers": null,
+                            "text": "1",
+                            "state": "normal",
+                            "placeholder_text": null,
+                            "font": null,
+                            "image": null,
+                            "compound": "center",
+                            "hover": true,
+                            "command": null,
+                            "anchor": "center",
+                            "wraplength": 0
                         }
                     },
                     {
@@ -23,9 +45,31 @@
                         "relx": "0.5",
                         "rely": "0.5",
                         "kwargs": {
+                            "width": 140,
+                            "height": 28,
+                            "corner_radius": null,
+                            "border_width": null,
+                            "border_spacing": 2,
+                            "bg_color": "transparent",
                             "fg_color": "red",
+                            "hover_color": null,
+                            "border_color": null,
                             "text_color": "white",
-                            "text": "2"
+                            "text_color_disabled": null,
+                            "placeholder_text_color": null,
+                            "background_corner_colors": null,
+                            "round_width_to_even_numbers": null,
+                            "round_height_to_even_numbers": null,
+                            "text": "2",
+                            "state": "normal",
+                            "placeholder_text": null,
+                            "font": null,
+                            "image": null,
+                            "compound": "center",
+                            "hover": true,
+                            "command": null,
+                            "anchor": "center",
+                            "wraplength": 0
                         }
                     },
                     {
@@ -33,9 +77,31 @@
                         "relx": "0.75",
                         "rely": "0.5",
                         "kwargs": {
+                            "width": 140,
+                            "height": 28,
+                            "corner_radius": null,
+                            "border_width": null,
+                            "border_spacing": 2,
+                            "bg_color": "transparent",
                             "fg_color": "red",
+                            "hover_color": null,
+                            "border_color": null,
                             "text_color": "white",
-                            "text": "3"
+                            "text_color_disabled": null,
+                            "placeholder_text_color": null,
+                            "background_corner_colors": null,
+                            "round_width_to_even_numbers": null,
+                            "round_height_to_even_numbers": null,
+                            "text": "3",
+                            "state": "normal",
+                            "placeholder_text": null,
+                            "font": null,
+                            "image": null,
+                            "compound": "center",
+                            "hover": true,
+                            "command": null,
+                            "anchor": "center",
+                            "wraplength": 0
                         }
                     }
                 ]
@@ -45,15 +111,7 @@
             "proj2": {
                 "name": "proj2",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
@@ -61,15 +119,7 @@
             "proj3": {
                 "name": "proj3",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
@@ -77,143 +127,71 @@
             "proj4": {
                 "name": "proj4",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj5": {
-                "name": "proj1",
+                "name": "proj5",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj6": {
-                "name": "proj2",
+                "name": "proj6",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj7": {
-                "name": "proj3",
+                "name": "proj7",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj8": {
-                "name": "proj4",
+                "name": "proj8",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj9": {
-                "name": "proj1",
+                "name": "proj9",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj10": {
-                "name": "proj2",
+                "name": "proj10",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello"
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj11": {
-                "name": "proj3",
+                "name": "proj11",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello"
-                        }
-                    }   
+                    
                 ]
             }
         },
         {
             "proj12": {
-                "name": "proj4",
+                "name": "proj12",
                 "elements": [
-                    {
-                        "typ": "button",
-                        "relx": "0.5",
-                        "rely": "0.5",
-                        "kwargs": {
-                            "fg_color": "red",
-                            "text": "hello" 
-                        }
-                    }   
+                    
                 ]
             }
         }
