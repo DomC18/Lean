@@ -1,4 +1,4 @@
-from project import Project
+from project import ProjectContainer, Project
 import globalvariables as gv
 import constants
 import json
@@ -15,14 +15,20 @@ def update_user_projects():
         return
     
     gv.user_projects.clear()
-    names = []
-    for proj in data["projects"]:
-        key = str(proj.keys())[12:-3]
-        names.append(key)
-    gv.user_projects = names.copy()
+    for idx, proj in enumerate(data["projects"]):
+        proj_name = str(proj.keys())[12:-3]
+        gv.user_projects.append(Project(name=proj_name))
+        gv.user_projects[idx].build_elements(data["projects"][idx][proj_name]["elements"])
 
 def load_project(projectname:str) -> None:
-    proj_idx = gv.user_projects.index(projectname)
+    proj_idx = -1
+    for idx, proj in enumerate(gv.user_projects):
+        if proj.name == projectname:
+            proj_idx = idx
+            break
+    if proj_idx == -1:
+        return
+    
     data:dict = {}
     file_dir = rf"{constants.USERDATADIR}{gv.name}.json"
 
@@ -33,15 +39,17 @@ def load_project(projectname:str) -> None:
         return
     
     desired_project = data["projects"][proj_idx][projectname]
-    gv.curr_project = Project(
-        gv.window,
-        gv.window.winfo_width(),
-        gv.window.winfo_height(),
-        "#470000",
-        desired_project["name"],
-    )
+    name = desired_project["name"]
     elements = desired_project["elements"]
-    gv.curr_project.build_elements(elements)
+    
+    gv.curr_project = Project(name)
+    gv.proj_container = ProjectContainer(
+        window=gv.window,
+        width=constants.WIDTH,
+        height=constants.HEIGHT,
+        project=gv.curr_project
+    )
+    gv.curr_project.build_and_place(gv.proj_container.drawing_frame, elements)
     
 def save_project() -> None:
     data:dict = {}

@@ -43,7 +43,6 @@ def verify_existing(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, passw
     gv.password = password
 
     if username == user_entry.get() and password == password_entry.get():
-        projutil.update_user_projects()
         proj_func()
 
 def register_new(root:tk.Tk, first_entry:tk.Entry, user_entry:tk.Entry, password_entry:tk.Entry, proj_func) -> None:

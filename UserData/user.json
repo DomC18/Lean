@@ -7,73 +7,214 @@
         {
             "proj1": {
                 "name": "proj1",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "label",
+                        "relx": "0.25",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text_color": "white",
+                            "text": "1"
+                        }
+                    },
+                    {
+                        "typ": "label",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text_color": "white",
+                            "text": "2"
+                        }
+                    },
+                    {
+                        "typ": "label",
+                        "relx": "0.75",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text_color": "white",
+                            "text": "3"
+                        }
+                    }
+                ]
             }
         },
         {
             "proj2": {
                 "name": "proj2",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj3": {
                 "name": "proj3",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj4": {
                 "name": "proj4",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj5": {
                 "name": "proj1",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj6": {
                 "name": "proj2",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj7": {
                 "name": "proj3",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj8": {
                 "name": "proj4",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj9": {
                 "name": "proj1",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj10": {
                 "name": "proj2",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello"
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj11": {
                 "name": "proj3",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello"
+                        }
+                    }   
+                ]
             }
         },
         {
             "proj12": {
                 "name": "proj4",
-                "elements": "elements"
+                "elements": [
+                    {
+                        "typ": "button",
+                        "relx": "0.5",
+                        "rely": "0.5",
+                        "kwargs": {
+                            "fg_color": "red",
+                            "text": "hello" 
+                        }
+                    }   
+                ]
             }
         }
     ]

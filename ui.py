@@ -1,9 +1,11 @@
 from fileutil import verify_existing
+from screeninfo import get_monitors
 from tkinter import messagebox
 import globalvariables as gv
 import customtkinter as ctk
 from projbox import ProjBox 
-from project import Project
+from project import ProjectContainer, Project
+import constants
 import projutil
 
 def rgb_to_hex(rgb:tuple) -> str:
@@ -21,11 +23,9 @@ def init_window() -> None:
     gv.window = ctk.CTk("#470000")
     gv.window.title("Lean")
     gv.window.resizable(width=False, height=False)
-    width = 1734
-    height = 975
-    horiz_offset = (gv.window.winfo_screenwidth() - width) / 2
-    vert_offset = (gv.window.winfo_screenheight() - height) / 2
-    gv.window.geometry(f"{width}x{height}+{int(horiz_offset)}+{int(vert_offset)}")
+    horiz_offset = (get_monitors()[0].width - constants.WIDTH) / 2
+    vert_offset = (get_monitors()[0].height - constants.HEIGHT) / 2
+    gv.window.geometry(f"{constants.WIDTH}x{constants.HEIGHT}+{int(horiz_offset)}+{int(vert_offset)}")
 
 def login_screen() -> None:
     destroy_children()
@@ -101,10 +101,11 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
     b.tkraise()    
 
 def new_project() -> None:
-    gv.curr_project = Project(
+    gv.curr_project = Project()
+    gv.proj_container = ProjectContainer(
         window=gv.window,
         width=gv.window.winfo_width(),
         height=gv.window.winfo_height(),
         bg_color="#470000",
-        name="project",
+        project=gv.curr_project
     )

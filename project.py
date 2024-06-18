@@ -1,15 +1,155 @@
-from tkinter import filedialog
+import globalvariables as gv
 import customtkinter as ctk
-import constants
 
-class Project(ctk.CTkFrame):
-    def __init__(self, window:ctk.CTk, width=0, height=0, bg_color="#470000", name="", **kwargs) -> None:
+class Element:
+    def __init__(self, 
+                typ:str = "label", 
+                relx:float = 0.5, 
+                rely:float = 0.5, 
+
+                window:ctk.CTk = ctk.CTk(),
+                width:int = 140,
+                height:int = 28,
+                corner_radius:int = None,
+                border_width:int = None,
+                border_spacing:int = 2,
+
+                bg_color:str = "transparent",
+                fg_color:str = None,
+                hover_color:str = None,
+                border_color:str = None,
+                text_color:str = None,
+                text_color_disabled = None,
+                placeholder_text_color:str = None,
+
+                background_corner_colors = None,
+                round_width_to_even_numbers = None,
+                round_height_to_even_numbers = None,
+
+                text:str = "CTkLabel",
+                textvariable:ctk.Variable = ctk.Variable(),
+                state:str = "normal",
+                placeholder_text:str = None,
+                font:tuple = None,
+                image:ctk.CTkImage = None,
+                compound:str = "center",
+                hover:bool = True,
+                command = None,
+                anchor:str = "center", 
+                wraplength:int = 0, 
+            ) -> None:
+        
+        self.typ = typ
+        self.relx = relx
+        self.rely = rely
+        self.window = window
+        self.width = width
+        self.height = height
+        self.corner_radius = corner_radius
+        self.border_width = border_width
+        self.border_spacing = border_spacing
+        self.bg_color = bg_color
+        self.fg_color = fg_color
+        self.hover_color = hover_color
+        self.border_color = border_color
+        self.text_color = text_color
+        self.text_color_disabled = text_color_disabled
+        self.placeholder_text_color = placeholder_text_color
+        self.background_corner_colors = background_corner_colors
+        self.round_width_to_even_numbers = round_width_to_even_numbers
+        self.round_height_to_even_numbers = round_height_to_even_numbers
+        self.text = text
+        self.textvariable = textvariable
+        self.state = state
+        self.placeholder_text = placeholder_text
+        self.font = font
+        self.image = image
+        self.compound = compound
+        self.hover = hover
+        self.command = command
+        self.anchor = anchor
+        self.wraplength = wraplength
+
+        self.kwargs = [self.window, self.width, self,height, self.corner_radius, self.border_width, self.border_spacing, self.bg_color, self.fg_color, self.hover_color, 
+                       self.border_color, self.text_color, self.text_color_disabled, self.placeholder_text_color, self.background_corner_colors, self.round_width_to_even_numbers, self.round_height_to_even_numbers,
+                       self.text, self.textvariable, self.state, self.placeholder_text, self.font, self.image, self.compound, self.hover, self.command, self.anchor, self.wraplength]
+
+        self.apply_config()
+
+    def apply_config(self) -> None:
+        if self.typ == "label":
+            self.editable = ctk.CTkLabel(self.window, self.width, self.height, self.corner_radius, self.bg_color, self.fg_color, self.text_color, self.text_color_disabled, self.text, self.font, self.image, self.compound, self.anchor, self.wraplength)
+        elif self.typ == "entry":
+            self.editable = ctk.CTkEntry(self.window, self.width, self.height, self.corner_radius, self.border_width, self.bg_color, self.fg_color, self.border_color, self.text_color, self.placeholder_text_color, self.textvariable, self.placeholder_text, self.font, self.state)
+        elif self.typ == "button":
+            self.editable = ctk.CTkButton(self.window, self.width, self.height, self.corner_radius, self.border_width, self.border_spacing, self.bg_color, self.fg_color, self.hover_color, self.border_color, self.text_color, self.text_color_disabled, self.background_corner_colors, self.round_width_to_even_numbers, self.round_height_to_even_numbers, self.text, self.font, self.textvariable, self.image, self.state, self.hover, self.command, self.compound, self.anchor)
+
+    def place(self) -> None:
+        self.editable.place(anchor="center", relx=self.relx, rely=self.rely)
+
+    def place_forget(self) -> None:
+        self.editable.place_forget()
+
+    def __repr__(self) -> str:
+        return f"type: {self.typ}\nrelx: {self.relx}\nrely: {self.rely}\nkwargs: {self.kwargs}\n"
+
+    def as_dict(self) -> dict:
+        return {
+            "type": self.typ,
+            "relx": str(self.relx),
+            "rely": str(self.rely),
+            "kwargs": self.kwargs
+        }
+        
+
+class Project:
+    def __init__(self, name:str="", elements:list[Element]=[]) -> None:
+        self.name = name
+        self.elements = elements
+        
+    def change_name(self, new_name:str) -> None:
+        self.name = new_name
+    
+    def change_element(self, old_element:Element, new_element:Element) -> None:
+        try: self.elements[self.elements.index(old_element)] = new_element
+        except: pass
+    
+    def add_element(self, element:Element) -> None:
+        self.elements.append(element)
+    
+    def clear_elements(self) -> None:
+        self.elements.clear()
+    
+    def build_elements(self, elements:list) -> None:
+        for element in elements:
+            self.elements.append(Element(typ=element["typ"], relx=float(element["relx"]), rely=float(element["rely"]), **element["kwargs"]))
+
+    def build_and_place(self, parent:ctk.CTkFrame, elements:list) -> None:
+        self.elements.clear()
+        for idx, element in enumerate(elements):
+            self.elements.append(Element(typ=element["typ"], relx=float(element["relx"]), rely=float(element["rely"]), window=parent, **element["kwargs"]))
+            self.elements[idx].place()
+
+    def __repr__(self) -> str:
+        return f"name: {self.name}\nelements: {len(self.elements)}\n"
+
+    def as_dict(self) -> dict:
+        return {
+            self.name: {
+                "name": self.name,
+                "elements": [element.as_dict() for element in self.elements],
+            }
+        }
+
+
+class ProjectContainer(ctk.CTkFrame):
+    def __init__(self, window:ctk.CTk, width=0, height=0, bg_color="#470000", project=Project(), **kwargs) -> None:
         super().__init__(master=window, width=width, height=height, bg_color=bg_color, **kwargs)
         self.window = window
         self.width = width
         self.height = height
         self.bg_color = bg_color
-        self.name = name
+        self.project = project
         self.place(anchor="center", relx=0.5, rely=0.5)
         self.util_frame = ctk.CTkFrame(master=self, width=width, height=height*0.1, fg_color=bg_color, border_width=2)
         self.util_frame.place(anchor="n", relx=0.5, rely=0)
@@ -39,18 +179,15 @@ class Project(ctk.CTkFrame):
         self.paste_button.configure(command=self.paste)
         self.e_collapse = None
 
-        self.import_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Import", font=("Arial", 50, "bold"), border_width=1)
-        self.import_button.configure(command=self.import_img)
-        self.import_button.place(anchor="w", relx=0.2, rely=0.5)
         self.undo_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="←Undo", font=("Arial", 50, "bold"), border_width=1)
         self.undo_button.configure(command=self.undo)
-        self.undo_button.place(anchor="w", relx=0.3, rely=0.5)
+        self.undo_button.place(anchor="w", relx=0.2, rely=0.5)
         self.redo_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Redo→", font=("Arial", 50, "bold"), border_width=1)
         self.redo_button.configure(command=self.redo)
-        self.redo_button.place(anchor="w", relx=0.4111, rely=0.5)
+        self.redo_button.place(anchor="w", relx=0.3111, rely=0.5)
         self.raise_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="↑ Raise", font=("Arial", 50, "bold"), border_width=1)
         self.raise_button.configure(command=self.raise_element)
-        self.raise_button.place(anchor="w", relx=0.52, rely=0.5)
+        self.raise_button.place(anchor="w", relx=0.42, rely=0.5)
         self.back_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="Main Menu", font=("Arial", 50, "bold"), border_width=1)
         self.back_button.configure(command=self.destruct)
         self.back_button.place(anchor="e", relx=1, rely=0.5)
@@ -122,40 +259,43 @@ class Project(ctk.CTkFrame):
             self.just_saved = False
 
     def open_project(self) -> None:
+        sample_element = Element(typ="label", relx=0.5, rely=0.5, window=self.drawing_frame)
+        sample_element.place()
+        self.project.add_element(sample_element)
         ...
+        self.just_saved = True
 
     def save(self) -> None:
         ...
+        self.just_saved = True
 
     def save_as(self) -> None:
         ...
+        self.just_saved = True
 
     def cut(self) -> None:
         ...
+        self.just_saved = False
     
     def copy(self) -> None:
         ...
+        self.just_saved = False
     
     def paste(self) -> None:
         ...
-
-    def import_img(self) -> None:
-        file_path = filedialog.askopenfilename(
-            initialdir=rf"{constants.PUBLICDIR}",
-            title="Select an image",
-            filetypes=(("PNGs", "*.png"), ("JPGs", "*.jpg"), ("All files", "*.*"))
-        )
-        if file_path:
-            ...
+        self.just_saved = False
 
     def undo(self) -> None:
         ...
+        self.just_saved = False
 
     def redo(self) -> None:
         ...
+        self.just_saved = False
 
     def raise_element(self, element) -> None:
         ...
+        self.just_saved = False
 
     def select(self) -> None:
         ...
@@ -168,33 +308,40 @@ class Project(ctk.CTkFrame):
 
     def pencil(self) -> None:
         ...
+        self.just_saved = False
     
     def erase(self) -> None:
         ...
+        self.just_saved = False
     
     def change_draw_size(self) -> None:
         ...
     
     def fill(self) -> None:
         ...
+        self.just_saved = False
     
     def eyedrop(self) -> None:
         ...
 
     def insert_text(self) -> None:
         ...
+        self.just_saved = False
 
     def select_element(self) -> None:
         ...
     
     def place_element(self) -> None:
         ...
+        self.just_saved = False
     
     def resize_element(self) -> None:
         ...
+        self.just_saved = False
     
     def rotate_element(self) -> None:
         ...
+        self.just_saved = False
 
     def select_color(self) -> None:
         ...
@@ -203,15 +350,8 @@ class Project(ctk.CTkFrame):
         ...
 
     def destruct(self) -> None:
+        self.just_saved = True
         self.destroy()
 
-    def build_elements(self, elements) -> None:
-        ...
-
-    def as_dict(self) -> dict:
-        return {
-            self.name: {
-                "name": self.name,
-                "elements": self.elements,
-            }
-        }
+    def change_proj(self, new_project:Project) -> None:
+        self.project = new_project

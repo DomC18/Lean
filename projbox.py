@@ -1,3 +1,4 @@
+from project import Project
 import globalvariables as gv
 import tkinter as tk
 import projutil
@@ -20,13 +21,13 @@ class ProjBox(tk.Frame):
     def rgb_to_hex(self, rgb:tuple) -> str:
         return '#{:02x}{:02x}{:02x}'.format(*rgb)
 
-    def insert(self, idx:int, projname:str) -> None:
+    def insert(self, idx:int, proj:Project) -> None:
         y_multiplier = 0.00175+(idx*0.13875)        
-        name_select = tk.Button(self.canvas, text=projname.casefold().capitalize(), font=('Arial', 50), bg=self.bg)
-        name_select.configure(command=lambda p=projname : self.select_proj(p))
+        name_select = tk.Button(self.canvas, text=proj.name.casefold().capitalize(), font=('Arial', 50, "bold"), bg=self.bg)
+        name_select.configure(command=lambda p=proj.name : self.select_proj(p))
         name_select.place(relx=0.001, rely=y_multiplier, anchor="nw")
 
-        self.proj_combos.update({projname:[projname, name_select]})
+        self.proj_combos.update({proj.name:[proj.name, name_select]})
             
     def move_down(self) -> None:
         if self.list_index+8 > len(gv.user_projects):
