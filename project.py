@@ -1,3 +1,4 @@
+from screeninfo import get_monitors
 from tkinter import messagebox
 import globalvariables as gv
 import customtkinter as ctk
@@ -134,9 +135,12 @@ class Element:
         
 
 class Project:
-    def __init__(self, name:str="", elements:list[Element]=[]) -> None:
+    def __init__(self, name:str="", elements:list[Element]=None) -> None:
         self.name = name
-        self.elements = elements
+        if not elements:
+            self.elements = []
+        else:
+            self.elements = elements
         
     def name_to(self, new_name:str) -> None:
         self.name = new_name
@@ -155,12 +159,6 @@ class Project:
         for element in elements:
             self.elements.append(Element(typ=element["typ"], relx=float(element["relx"]), rely=float(element["rely"]), **element["kwargs"]))
 
-    def place_elements(self, parent:ctk.CTkFrame) -> None:
-        for element in self.elements:
-            element.window = parent
-            element.apply_config()
-            element.place()
-
     def __repr__(self) -> str:
         return f"name: {self.name}\nelements: {self.elements}\n"
 
@@ -174,13 +172,14 @@ class Project:
 
 
 class ProjectContainer(ctk.CTkFrame):
-    def __init__(self, window:ctk.CTk, width=constants.WIDTH, height=constants.HEIGHT, bg_color=constants.MAROON, project=Project(), **kwargs) -> None:
+    def __init__(self, window:ctk.CTk, width=constants.WIDTH, height=constants.HEIGHT, bg_color=constants.MAROON, projects:list=[], proj_idx:int=-1, **kwargs) -> None:
         super().__init__(master=window, width=width, height=height, bg_color=bg_color, **kwargs)
         self.window = window
         self.width = width
         self.height = height
         self.bg_color = bg_color
-        self.project = project
+        self.projects = projects
+        self.proj_idx = proj_idx
         self.util_frame = ctk.CTkFrame(master=self, width=width, height=height*0.1, fg_color=bg_color, border_width=2)
         self.util_frame.place(anchor="n", relx=0.5, rely=0)
 
@@ -291,19 +290,19 @@ class ProjectContainer(ctk.CTkFrame):
     def open_project(self) -> None:
         sample_element = Element(typ="label", relx=0.5, rely=0.5, window=self.drawing_frame)
         sample_element.place()
-        self.project.add_element(sample_element)
+        self.projects[self.proj_idx].add_element(sample_element)
         ...
         self.just_saved = True
 
     def save(self) -> None:
-        if self.project.name == "":
+        if self.projects[self.proj_idx].name == "":
             self.save_as()
             return
 
         data:dict = {}
         file_dir = rf"{constants.USERDATADIR}{gv.name}.json"
         project_data = []
-        for proj in gv.user_projects:
+        for proj in self.projects:
             project_data.append(proj.as_dict())
 
         data = {
@@ -323,15 +322,33 @@ class ProjectContainer(ctk.CTkFrame):
             json.dump(data, file, indent=4)
 
     def save_as(self) -> None:
-        name = simpledialog.askstring("Project Name", "Please enter a project name:")
-        elements = self.project.elements
-        if name:
-            self.project = None
-            self.project = Project(name, elements)
-        else:
-            messagebox.showwarning("Input Error", "No project name entered.")
-        self.save()
+        window = ctk.CTk(constants.MAROON)
+        window.title("Save Project As")
+        window.resizable(width=False, height=False)
+        horiz_offset = (get_monitors()[0].width - int(constants.WIDTH/5)) / 2
+        vert_offset = (get_monitors()[0].height - int(constants.HEIGHT/5)) / 2
+        window.geometry(f"{int(constants.WIDTH/5)}x{int(constants.HEIGHT/5)}+{horiz_offset}+{vert_offset}")
+        
+        entry = ctk.CTkEntry(window, width=int(constants.WIDTH/7.5), font=("Times New Roman", 30, "bold"))
+        entry.place(anchor="center", relx=0.5, rely=0.33)
+        confirm = ctk.CTkButton(window, width=int(constants.WIDTH/7/5), font=("Times New Roman", 30, "bold"), text="Confirm Name")
+        confirm.configure(command=lambda e=entry : validate_name(e))
+        confirm.place(anchor="center", relx=0.5, rely=0.66)
 
+        def validate_name(entry:ctk.CTkEntry) -> None:
+            name = entry.get()
+            if name != "":
+                elements = self.projects[self.proj_idx].elements
+                self.projects[self.proj_idx] = None; gv.user_projects[self.proj_idx] = None
+                self.projects[self.proj_idx] = Project(name, elements); gv.user_projects[self.proj_idx] = Project(name, elements)
+                window.destroy()
+                self.save()
+            else:
+                messagebox.showwarning("Input Error", "No project name entered.")
+                return
+        
+        window.mainloop()
+            
     def cut(self) -> None:
         ...
         self.just_saved = False
@@ -411,6 +428,9 @@ class ProjectContainer(ctk.CTkFrame):
     def destruct(self) -> None:
         self.just_saved = True
         self.destroy()
-
-    def change_proj(self, new_project:Project) -> None:
-        self.project = new_project
+    
+    def place_elements(self) -> None:
+        for element in self.projects[self.proj_idx].elements:
+            element.window = self.drawing_frame
+            element.apply_config()
+            element.place()

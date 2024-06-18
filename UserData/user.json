@@ -110,89 +110,67 @@
         {
             "proj2": {
                 "name": "proj2",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj3": {
                 "name": "proj3",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj4": {
                 "name": "proj4",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj5": {
                 "name": "proj5",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj6": {
                 "name": "proj6",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj7": {
                 "name": "proj7",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj8": {
                 "name": "proj8",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj9": {
                 "name": "proj9",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj10": {
                 "name": "proj10",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj11": {
                 "name": "proj11",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         },
         {
             "proj12": {
                 "name": "proj12",
-                "elements": [
-                    
-                ]
+                "elements": []
             }
         }
     ]

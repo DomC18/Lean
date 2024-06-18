@@ -95,8 +95,8 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
     b.tkraise()    
 
 def new_project() -> None:
+    projutil.update_user_projects()
     gv.user_projects.append(Project())
     gv.curr_project = gv.user_projects[-1]
-    gv.proj_container = ProjectContainer(gv.window)
-    gv.proj_container.project = gv.curr_project
+    gv.proj_container = ProjectContainer(window=gv.window, projects=gv.user_projects, proj_idx=-1)
     gv.proj_container.place(anchor="center", relx=0.5, rely=0.5)
