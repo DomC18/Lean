@@ -29,6 +29,7 @@ def load_project(projectname:str) -> None:
     if proj_idx == -1:
         return
         
+    gv.proj_container = None
     gv.proj_container = ProjectContainer(window=gv.window, projects=gv.user_projects, proj_idx=proj_idx)
     gv.proj_container.place(anchor="center", relx=0.5, rely=0.5)
     gv.proj_container.place_elements()

@@ -180,8 +180,18 @@ class ProjectContainer(ctk.CTkFrame):
         self.bg_color = bg_color
         self.projects = projects
         self.proj_idx = proj_idx
-        self.util_frame = ctk.CTkFrame(master=self, width=width, height=height*0.1, fg_color=bg_color, border_width=2)
+
+        self.curr_tool = "select"
+        self.curr_tool_selected = None
+        self.curr_color = "black"
+        self.curr_color_selected = None
+
+        self.util_frame = ctk.CTkFrame(master=self, width=width, height=height*0.1, fg_color=bg_color, border_width=3)
         self.util_frame.place(anchor="n", relx=0.5, rely=0)
+        self.mass_frame = ctk.CTkFrame(master=self, width=width, height=height*0.18, fg_color=bg_color, border_width=3)
+        self.mass_frame.place(anchor="n", relx=0.5, rely=0.1)
+        self.drawing_frame = ctk.CTkFrame(master=self, width=width, height=height*0.72, fg_color=bg_color, border_width=3)
+        self.drawing_frame.place(anchor="n", relx=0.5, rely=0.28)
 
         self.file_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="File", font=("Arial", 50, "bold"), border_width=1)
         self.file_button.configure(command=self.file_expand)
@@ -221,11 +231,172 @@ class ProjectContainer(ctk.CTkFrame):
         self.back_button.configure(command=self.destruct)
         self.back_button.place(anchor="e", relx=1, rely=0.5)
 
-        self.tool_frame = ctk.CTkFrame(master=self, width=width, height=height*0.18, fg_color=bg_color, border_width=2)
-        self.tool_frame.place(anchor="n", relx=0.5, rely=0.1)
+        self.tool_frame = ctk.CTkFrame(master=self.mass_frame, width=width*0.25, height=height*0.1795, fg_color=bg_color, border_width=3)
+        self.tool_frame.place(anchor="center", relx=0.125, rely=0.5)
+        self.select_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="Select", border_color="black")
+        self.select_button.configure(command=lambda t="select", b=self.select_button : self.choose_tool(t,b))
+        self.select_button.place(anchor="center", relx=0.25, rely=1/6)
+        self.pencil_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="Pencil", border_color="black")
+        self.pencil_button.configure(command=lambda t="pencil", b=self.pencil_button : self.choose_tool(t,b))
+        self.pencil_button.place(anchor="center", relx=0.25, rely=3/6)
+        self.erase_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="Erase", border_color="black")
+        self.erase_button.configure(command=lambda t="erase", b=self.erase_button : self.choose_tool(t,b))
+        self.erase_button.place(anchor="center", relx=0.25, rely=5/6)
+        self.freeform_select_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="Freeform", border_color="black")
+        self.freeform_select_button.configure(command=lambda t="freeformselect", b=self.freeform_select_button : self.choose_tool(t,b))
+        self.freeform_select_button.place(anchor="center", relx=0.75, rely=1/6)
+        self.fill_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="Fill", border_color="black")
+        self.fill_button.configure(command=lambda t="fill", b=self.fill_button : self.choose_tool(t,b))
+        self.fill_button.place(anchor="center", relx=0.75, rely=3/6)
+        self.text_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="A", border_color="black")
+        self.text_button.configure(command=lambda t="text", b=self.text_button : self.choose_tool(t,b))
+        self.text_button.place(anchor="center", relx=0.75, rely=5/6)
+        self.choose_tool(tool="select", button=self.select_button)
 
-        self.drawing_frame = ctk.CTkFrame(master=self, width=width, height=height*0.72, fg_color=bg_color, border_width=2)
-        self.drawing_frame.place(anchor="n", relx=0.5, rely=0.28)
+        self.color_frame = ctk.CTkFrame(master=self.mass_frame, width=width*0.25, height=height*0.1795, fg_color=bg_color, border_width=3)
+        self.color_frame.place(anchor="center", relx=0.375, rely=0.5)
+        self.black_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#000000", border_width=1, text="", border_color="black")
+        self.black_color_button.configure(command=lambda c="#000000", b=self.black_color_button: self.choose_color(c, b))
+        self.black_color_button.place(anchor="center", relx=0.1, rely=0.125)
+        self.white_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#ffffff", border_width=1, text="", border_color="black")
+        self.white_color_button.configure(command=lambda c="#ffffff", b=self.white_color_button: self.choose_color(c, b))
+        self.white_color_button.place(anchor="center", relx=0.1, rely=0.375)
+        self.gray_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#808080", border_width=1, text="", border_color="black")
+        self.gray_color_button.configure(command=lambda c="#808080", b=self.gray_color_button: self.choose_color(c, b))
+        self.gray_color_button.place(anchor="center", relx=0.1, rely=0.625)
+        self.lightgray_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#c0c0c0", border_width=1, text="", border_color="black")
+        self.lightgray_color_button.configure(command=lambda c="#c0c0c0", b=self.lightgray_color_button: self.choose_color(c, b))
+        self.lightgray_color_button.place(anchor="center", relx=0.1, rely=0.875)
+        self.darkred_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#8b0000", border_width=1, text="", border_color="black")
+        self.darkred_color_button.configure(command=lambda c="#8b0000", b=self.darkred_color_button: self.choose_color(c, b))
+        self.darkred_color_button.place(anchor="center", relx=0.3, rely=0.125)
+        self.maroon_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color=constants.MAROON, border_width=1, text="", border_color="black")
+        self.maroon_color_button.configure(command=lambda c=constants.MAROON, b=self.maroon_color_button: self.choose_color(c, b))
+        self.maroon_color_button.place(anchor="center", relx=0.3, rely=0.375)
+        self.red_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#ff0000", border_width=1, text="", border_color="black")
+        self.red_color_button.configure(command=lambda c="#ff0000", b=self.red_color_button: self.choose_color(c, b))
+        self.red_color_button.place(anchor="center", relx=0.3, rely=0.625)
+        self.rose_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#f08080", border_width=1, text="", border_color="black")
+        self.rose_color_button.configure(command=lambda c="#f08080", b=self.rose_color_button: self.choose_color(c, b))
+        self.rose_color_button.place(anchor="center", relx=0.3, rely=0.875)
+        self.orange_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#ffa500", border_width=1, text="", border_color="black")
+        self.orange_color_button.configure(command=lambda c="#ffa500", b=self.orange_color_button: self.choose_color(c, b))
+        self.orange_color_button.place(anchor="center", relx=0.5, rely=0.125)
+        self.gold_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#ffd700", border_width=1, text="", border_color="black")
+        self.gold_color_button.configure(command=lambda c="#ffd700", b=self.gold_color_button: self.choose_color(c, b))
+        self.gold_color_button.place(anchor="center", relx=0.5, rely=0.375)
+        self.yellow_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#ffff00", border_width=1, text="", border_color="black")
+        self.yellow_color_button.configure(command=lambda c="#ffff00", b=self.yellow_color_button: self.choose_color(c, b))
+        self.yellow_color_button.place(anchor="center", relx=0.5, rely=0.625)
+        self.cream_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#fffdd0", border_width=1, text="", border_color="black")
+        self.cream_color_button.configure(command=lambda c="#fffdd0", b=self.cream_color_button: self.choose_color(c, b))
+        self.cream_color_button.place(anchor="center", relx=0.5, rely=0.875)
+        self.green_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#008000", border_width=1, text="", border_color="black")
+        self.green_color_button.configure(command=lambda c="#008000", b=self.green_color_button: self.choose_color(c, b))
+        self.green_color_button.place(anchor="center", relx=0.7, rely=0.125)
+        self.limegreen_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#90ee90", border_width=1, text="", border_color="black")
+        self.limegreen_color_button.configure(command=lambda c="#90ee90", b=self.limegreen_color_button: self.choose_color(c, b))
+        self.limegreen_color_button.place(anchor="center", relx=0.7, rely=0.375)
+        self.blue_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#0000ff", border_width=1, text="", border_color="black")
+        self.blue_color_button.configure(command=lambda c="#0000ff", b=self.blue_color_button: self.choose_color(c, b))
+        self.blue_color_button.place(anchor="center", relx=0.7, rely=0.625)
+        self.cyan_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#00ffff", border_width=1, text="", border_color="black")
+        self.cyan_color_button.configure(command=lambda c="#00ffff", b=self.cyan_color_button: self.choose_color(c, b))
+        self.cyan_color_button.place(anchor="center", relx=0.7, rely=0.875)
+        self.turquoise_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#00ced1", border_width=1, text="", border_color="black")
+        self.turquoise_color_button.configure(command=lambda c="#00ced1", b=self.turquoise_color_button: self.choose_color(c, b))
+        self.turquoise_color_button.place(anchor="center", relx=0.9, rely=0.125)
+        self.navy_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#000080", border_width=1, text="", border_color="black")
+        self.navy_color_button.configure(command=lambda c="#000080", b=self.navy_color_button: self.choose_color(c, b))
+        self.navy_color_button.place(anchor="center", relx=0.9, rely=0.375)
+        self.purple_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#800080", border_width=1, text="", border_color="black")
+        self.purple_color_button.configure(command=lambda c="#800080", b=self.purple_color_button: self.choose_color(c, b))
+        self.purple_color_button.place(anchor="center", relx=0.9, rely=0.625)
+        self.magenta_color_button = ctk.CTkButton(master=self.color_frame, width=int(width*0.25*0.2*0.5), height=int(height*0.1795*0.25*0.75), fg_color="#ff00ff", border_width=1, text="", border_color="black")
+        self.magenta_color_button.configure(command=lambda c="#ff00ff", b=self.magenta_color_button: self.choose_color(c, b))
+        self.magenta_color_button.place(anchor="center", relx=0.9, rely=0.875)
+        self.choose_color(color="black", button=self.black_color_button)
+
+        self.shapes_frame = ctk.CTkFrame(master=self.mass_frame, width=width*0.25, height=height*0.1795, fg_color=bg_color, border_width=3)
+        self.shapes_frame.place(anchor="center", relx=0.625, rely=0.5)
+        self.line_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="ln", border_color="black")
+        self.line_button.configure(command=lambda t="line", b=self.line_button : self.choose_tool(t,b))
+        self.line_button.place(anchor="center", relx=0.125, rely=0.125)
+        self.circle_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="cr", border_color="black")
+        self.circle_button.configure(command=lambda t="circle", b=self.circle_button : self.choose_tool(t,b))
+        self.circle_button.place(anchor="center", relx=0.375, rely=0.125)
+        self.rectangle_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="re", border_color="black")
+        self.rectangle_button.configure(command=lambda t="rectangle", b=self.rectangle_button : self.choose_tool(t,b))
+        self.rectangle_button.place(anchor="center", relx=0.625, rely=0.125)
+        self.roundedrectangle_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="rr", border_color="black")
+        self.roundedrectangle_button.configure(command=lambda t="roundedrectangle", b=self.roundedrectangle_button : self.choose_tool(t,b))
+        self.roundedrectangle_button.place(anchor="center", relx=0.875, rely=0.125)
+        self.triangle_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="tr", border_color="black")
+        self.triangle_button.configure(command=lambda t="triangle", b=self.triangle_button : self.choose_tool(t,b))
+        self.triangle_button.place(anchor="center", relx=0.125, rely=0.375)
+        self.righttriangle_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="rt", border_color="black")
+        self.righttriangle_button.configure(command=lambda t="righttriangle", b=self.righttriangle_button : self.choose_tool(t,b))
+        self.righttriangle_button.place(anchor="center", relx=0.375, rely=0.375)
+        self.diamond_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="di", border_color="black")
+        self.diamond_button.configure(command=lambda t="diamond", b=self.diamond_button : self.choose_tool(t,b))
+        self.diamond_button.place(anchor="center", relx=0.625, rely=0.375)
+        self.pentagon_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="pt", border_color="black")
+        self.pentagon_button.configure(command=lambda t="pentagon", b=self.pentagon_button : self.choose_tool(t,b))
+        self.pentagon_button.place(anchor="center", relx=0.875, rely=0.375)
+        self.hexagon_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="hx", border_color="black")
+        self.hexagon_button.configure(command=lambda t="hexagon", b=self.hexagon_button : self.choose_tool(t,b))
+        self.hexagon_button.place(anchor="center", relx=0.125, rely=0.625)
+        self.rightarrow_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="ra", border_color="black")
+        self.rightarrow_button.configure(command=lambda t="rightarrow", b=self.rightarrow_button : self.choose_tool(t,b))
+        self.rightarrow_button.place(anchor="center", relx=0.375, rely=0.625)
+        self.leftarrow_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="la", border_color="black")
+        self.leftarrow_button.configure(command=lambda t="leftarrow", b=self.leftarrow_button : self.choose_tool(t,b))
+        self.leftarrow_button.place(anchor="center", relx=0.625, rely=0.625)
+        self.uparrow_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="ua", border_color="black")
+        self.uparrow_button.configure(command=lambda t="uparrow", b=self.uparrow_button : self.choose_tool(t,b))
+        self.uparrow_button.place(anchor="center", relx=0.875, rely=0.625)
+        self.downarrow_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="da", border_color="black")
+        self.downarrow_button.configure(command=lambda t="downarrow", b=self.downarrow_button : self.choose_tool(t,b))
+        self.downarrow_button.place(anchor="center", relx=0.125, rely=0.875)
+        self.fourpointstar_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="4s", border_color="black")
+        self.fourpointstar_button.configure(command=lambda t="fourpointstar", b=self.fourpointstar_button : self.choose_tool(t,b))
+        self.fourpointstar_button.place(anchor="center", relx=0.375, rely=0.875)
+        self.fivepointstar_button = ctk.CTkButton(master=self.shapes_frame, width=width*0.22*0.25, height=height*0.15*0.25, fg_color=bg_color, border_width=1, text="5s", border_color="black")
+        self.fivepointstar_button.configure(command=lambda t="fivepointstar", b=self.fivepointstar_button : self.choose_tool(t,b))
+        self.fivepointstar_button.place(anchor="center", relx=0.625, rely=0.875)
+
+        self.advshapes_frame = ctk.CTkFrame(master=self.mass_frame, width=width*0.25, height=height*0.1795, fg_color=bg_color, border_width=3)
+        self.advshapes_frame.place(anchor="center", relx=0.875, rely=0.5)
+        self.array_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="ar", border_color="black")
+        self.array_button.configure(command=lambda t="array", b=self.array_button : self.choose_tool(t,b))
+        self.array_button.place(anchor="center", relx=0.1, rely=0.25)
+        self.twodarray_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="2r", border_color="black")
+        self.twodarray_button.configure(command=lambda t="twodarray", b=self.twodarray_button : self.choose_tool(t,b))
+        self.twodarray_button.place(anchor="center", relx=0.3, rely=0.25)
+        self.singlyll_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="sl", border_color="black")
+        self.singlyll_button.configure(command=lambda t="singlyll", b=self.singlyll_button : self.choose_tool(t,b))
+        self.singlyll_button.place(anchor="center", relx=0.5, rely=0.25)
+        self.doublyll_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="dl", border_color="black")
+        self.doublyll_button.configure(command=lambda t="doublyll", b=self.doublyll_button : self.choose_tool(t,b))
+        self.doublyll_button.place(anchor="center", relx=0.7, rely=0.25)
+        self.stack_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="st", border_color="black")
+        self.stack_button.configure(command=lambda t="stack", b=self.stack_button : self.choose_tool(t,b))
+        self.stack_button.place(anchor="center", relx=0.9, rely=0.25)
+        self.queue_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="qu", border_color="black")
+        self.queue_button.configure(command=lambda t="queue", b=self.queue_button : self.choose_tool(t,b))
+        self.queue_button.place(anchor="center", relx=0.1, rely=0.75)
+        self.bintree_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="bt", border_color="black")
+        self.bintree_button.configure(command=lambda t="bintree", b=self.bintree_button : self.choose_tool(t,b))
+        self.bintree_button.place(anchor="center", relx=0.3, rely=0.75)
+        self.heap_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="hp", border_color="black")
+        self.heap_button.configure(command=lambda t="heap", b=self.heap_button : self.choose_tool(t,b))
+        self.heap_button.place(anchor="center", relx=0.5, rely=0.75)
+        self.hashtable_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="ha", border_color="black")
+        self.hashtable_button.configure(command=lambda t="hashtable", b=self.hashtable_button : self.choose_tool(t,b))
+        self.hashtable_button.place(anchor="center", relx=0.7, rely=0.75)
+        self.graph_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="gr", border_color="black")
+        self.graph_button.configure(command=lambda t="graph", b=self.graph_button : self.choose_tool(t,b))
+        self.graph_button.place(anchor="center", relx=0.9, rely=0.75)
     
     def file_expand(self) -> None:
         self.file_button.configure(command=lambda e=None : self.file_collapse(e))
@@ -282,17 +453,32 @@ class ProjectContainer(ctk.CTkFrame):
         self.e_collapse = None
 
     def new_project(self) -> None:
-        if self.just_saved:
-            for widget in self.drawing_frame.winfo_children():
-                widget.destroy()
-            self.just_saved = False
+        if not self.just_saved:
+            self.save()
+        
+        self.projects.append(Project())
+        self.proj_idx = -1
+
+        for child in self.drawing_frame.winfo_children():
+            child.destroy()
+        
+        self.just_saved = False
 
     def open_project(self) -> None:
-        sample_element = Element(typ="label", relx=0.5, rely=0.5, window=self.drawing_frame)
-        sample_element.place()
-        self.projects[self.proj_idx].add_element(sample_element)
-        ...
-        self.just_saved = True
+        name_empty = self.projects[self.proj_idx].name == ""
+        if not self.just_saved and not name_empty:
+            self.save()
+
+        if len(self.projects) <= 1:
+            messagebox.showinfo("Number of Projects", "One or less projects are present on this account. Please create a new project.")
+            return
+
+        if name_empty:
+            self.projects.pop()
+
+        self.destruct()
+        self.just_saved = False
+        gv.projbox.list_index = 0
 
     def save(self) -> None:
         if self.projects[self.proj_idx].name == "":
@@ -320,6 +506,8 @@ class ProjectContainer(ctk.CTkFrame):
         
         with open(file_dir, "w") as file:
             json.dump(data, file, indent=4)
+        
+        self.just_saved = True
 
     def save_as(self) -> None:
         window = ctk.CTk(constants.MAROON)
@@ -373,64 +561,25 @@ class ProjectContainer(ctk.CTkFrame):
         ...
         self.just_saved = False
 
-    def select(self) -> None:
-        ...
-    
-    def select_elements(self) -> None:
-        ...
+    def choose_color(self, color:str, button:ctk.CTkButton) -> None:
+        self.curr_color = color
+        if self.curr_color_selected:
+            self.curr_color_selected.configure(border_width=1)
+        button.configure(border_width=5)
+        self.curr_color_selected = button
 
-    def select_all(self) -> None:
-        ...
-
-    def pencil(self) -> None:
-        ...
-        self.just_saved = False
-    
-    def erase(self) -> None:
-        ...
-        self.just_saved = False
-    
-    def change_draw_size(self) -> None:
-        ...
-    
-    def fill(self) -> None:
-        ...
-        self.just_saved = False
-    
-    def eyedrop(self) -> None:
-        ...
-
-    def insert_text(self) -> None:
-        ...
-        self.just_saved = False
-
-    def select_element(self) -> None:
-        ...
-    
-    def place_element(self) -> None:
-        ...
-        self.just_saved = False
-    
-    def resize_element(self) -> None:
-        ...
-        self.just_saved = False
-    
-    def rotate_element(self) -> None:
-        ...
-        self.just_saved = False
-
-    def select_color(self) -> None:
-        ...
-    
-    def pick_color(self) -> None:
-        ...
-
-    def destruct(self) -> None:
-        self.just_saved = True
-        self.destroy()
+    def choose_tool(self, tool:str, button:ctk.CTkButton) -> None:
+        self.curr_tool = tool
+        if self.curr_tool_selected:
+            self.curr_tool_selected.configure(border_width=1)
+        button.configure(border_width=5)
+        self.curr_tool_selected = button
     
     def place_elements(self) -> None:
         for element in self.projects[self.proj_idx].elements:
             element.window = self.drawing_frame
             element.apply_config()
             element.place()
+
+    def destruct(self) -> None:
+        self.destroy()

@@ -72,20 +72,20 @@ def choose_project(b:ctk.CTkButton, n:ctk.CTkButton, o:ctk.CTkButton) -> None:
 
     boxframe = ctk.CTkFrame(gv.window, width=1500, height=800)
     boxframe.place(anchor="s", relx=0.5, rely=1)
-    projbox = ProjBox(master=boxframe, root=gv.window, width=1500, height=800, bg=constants.MAROON)
-    projbox.list_index = 0
+    gv.projbox = ProjBox(master=boxframe, root=gv.window, width=1500, height=800, bg=constants.MAROON)
+    gv.projbox.list_index = 0
     for idx, proj in enumerate(gv.user_projects):
-        if idx < projbox.list_index:
+        if idx < gv.projbox.list_index:
             continue
-        if idx > projbox.list_index + 6:
+        if idx > gv.projbox.list_index + 6:
             break
-        projbox.insert(idx-projbox.list_index, proj)
-    projbox.pack()
+        gv.projbox.insert(idx-gv.projbox.list_index, proj)
+    gv.projbox.pack()
     up_button = ctk.CTkButton(boxframe, text="↑", bg_color=constants.MAROON, fg_color="black", font=("Arial", 46, "bold"), height=150)
-    up_button.configure(command=projbox.move_up)
+    up_button.configure(command=gv.projbox.move_up)
     up_button.place(relx=1-(0.0001*16), rely=0+(0.0001*9), anchor="ne")
     down_button = ctk.CTkButton(boxframe, text="↓", bg_color=constants.MAROON, fg_color="black", font=("Arial", 46, "bold"), height=150)
-    down_button.configure(command=projbox.move_down)
+    down_button.configure(command=gv.projbox.move_down)
     down_button.place(relx=1-(0.0001*16), rely=1-(0.0001*9), anchor="se")
     
     n.place_forget()
@@ -98,5 +98,6 @@ def new_project() -> None:
     projutil.update_user_projects()
     gv.user_projects.append(Project())
     gv.curr_project = gv.user_projects[-1]
+    gv.proj_container = None
     gv.proj_container = ProjectContainer(window=gv.window, projects=gv.user_projects, proj_idx=-1)
     gv.proj_container.place(anchor="center", relx=0.5, rely=0.5)
