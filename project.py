@@ -179,39 +179,43 @@ class ProjectContainer(ctk.CTkFrame):
         self.proj_idx = proj_idx
 
         self.func_dict = {
-            "select": self.select_tool, 
-            "pencil": self.pencil_tool, 
-            "erase": self.erase_tool,
-            "freeformselect": self.freeformselect_tool,
-            "fill": self.fill_tool,
-            "text": self.text_tool,
-            "line": self.line_tool,
-            "circle": self.circle_tool,
-            "rectangle": self.rectangle_tool,
-            "roundedrectangle": self.roundedrectangle_tool,
-            "triangle": self.triangle_tool,
-            "righttriangle": self.righttriangle_tool,
-            "diamond": self.diamond_tool,
-            "pentagon": self.pentagon_tool,
-            "hexagon": self.hexagon_tool,
-            "rightarrow": self.rightarrow_tool,
-            "leftarrow": self.leftarrow_tool,
-            "uparrow": self.uparrow_tool,
-            "downarrow": self.downarrow_tool,
-            "fourpointstar": self.fourpointstar_tool,
-            "fivepointstar": self.fivepointstar_tool,
-            "array": self.array_tool,
-            "twodimensionalarray": self.twodimensionalarray_tool,
-            "singlylinkedlist": self.singlylinkedlist_tool,
-            "doublylinkedlist": self.doublylinkedlist_tool,
-            "stack": self.stack_tool,
-            "queue": self.queue_tool,
-            "binarytree": self.binarytree_tool,
-            "heap": self.heap_tool,
-            "hashtable": self.hashtable_tool,
-            "graph": self.graph_tool
+            "select": [self.select_tool_start,self.select_tool_during,self.select_tool_end],
+            "pencil": [self.pencil_tool_start,self.pencil_tool_during,self.pencil_tool_end],
+            "erase": [self.erase_tool_start,self.erase_tool_during,self.erase_tool_end],
+            "freeformselect": [self.freeformselect_tool_start,self.freeformselect_tool_during,self.freeformselect_tool_end],
+            "fill": [self.fill_tool_start,self.fill_tool_during,self.fill_tool_end],
+            "text": [self.text_tool_start,self.text_tool_during,self.text_tool_end],
+            "line": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "circle": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "rectangle": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "roundedrectangle": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "triangle": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "righttriangle": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "diamond": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "pentagon": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "hexagon": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "rightarrow": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "leftarrow": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "uparrow": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "downarrow": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "fourpointstar": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "fivepointstar": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "array": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "twodimensionalarray": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "singlylinkedlist": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "doublylinkedlist": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "stack": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "queue": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "binarytree": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "heap": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "hashtable": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end],
+            "graph": [self.shape_tool_start,self.shape_tool_during,self.shape_tool_end]
         }
 
+        self.mouse_held = False
+        self.mouse_x = 0
+        self.mouse_y = 0
+        self.started_tool = False
         self.curr_tool = "select"
         self.curr_tool_selected = None
         self.curr_color = "black"
@@ -430,106 +434,100 @@ class ProjectContainer(ctk.CTkFrame):
         self.graph_button.place(anchor="center", relx=0.9, rely=0.75)
 
         self.handling_id = self.window.after(50, self.handle_tool)
+        self.window.bind("<ButtonPress-1>", self.mouse_clicked)
+        self.window.bind("<ButtonRelease-1>", self.mouse_idle)
     
+    def mouse_clicked(self, event) -> None: 
+        self.mouse_held = True
+        self.mouse_x = event.x
+        self.mouse_y = event.y
+    
+    def mouse_idle(self, event) -> None:
+        self.mouse_held = False
+        self.mouse_x = event.x
+        self.mouse_y = event.y
+
     def handle_tool(self) -> None:
-        try: tool_handler = self.func_dict[self.curr_tool]
+        try:
+            self.start_handler = self.func_dict[self.curr_tool][0]
+            self.during_handler = self.func_dict[self.curr_tool][1]
+            self.end_handler = self.func_dict[self.curr_tool][2]
         except:
-            print("No function found")
             return
     
-        tool_handler()
+        self.start_handler()
+        self.window.after(50, self.handle_tool)
 
-    def select_tool(self) -> None:
-        ...
+    def select_tool_start(self) -> None:
+        if not self.started_tool:
+            if self.mouse_held:
+                print("select started")
+                self.started_tool = True
+            return
+        self.select_tool_during()
     
-    def pencil_tool(self) -> None:
-        ...
+    def select_tool_during(self) -> None:
+        if self.mouse_held:
+            print("select during")
+            return
+        self.select_tool_end()
     
-    def erase_tool(self) -> None:
-        ...
-    
-    def freeformselect_tool(self) -> None:
-        ...
-    
-    def fill_tool(self) -> None:
-        ...
-    
-    def text_tool(self) -> None:
-        ...
-    
-    def line_tool(self) -> None:
-        ...
-    
-    def circle_tool(self) -> None:
-        ...
-    
-    def rectangle_tool(self) -> None:
-        ...
-    
-    def roundedrectangle_tool(self) -> None:
-        ...
-    
-    def triangle_tool(self) -> None:
-        ...
-    
-    def righttriangle_tool(self) -> None:
-        ...
-    
-    def diamond_tool(self) -> None:
-        ...
-    
-    def pentagon_tool(self) -> None:
-        ...
-    
-    def hexagon_tool(self) -> None:
-        ...
-    
-    def rightarrow_tool(self) -> None:
-        ...
-    
-    def leftarrow_tool(self) -> None:
-        ...
+    def select_tool_end(self) -> None:
+        print("select end")
+        self.started_tool = False
 
-    def uparrow_tool(self) -> None:
+    def pencil_tool_start(self) -> None:
         ...
     
-    def downarrow_tool(self) -> None:
+    def pencil_tool_during(self) -> None:
         ...
     
-    def fourpointstar_tool(self) -> None:
+    def pencil_tool_end(self) -> None:
         ...
     
-    def fivepointstar_tool(self) -> None:
+    def erase_tool_start(self) -> None:
         ...
     
-    def array_tool(self) -> None:
+    def erase_tool_during(self) -> None:
         ...
     
-    def twodimensionalarray_tool(self) -> None:
+    def erase_tool_end(self) -> None:
         ...
     
-    def singlylinkedlist_tool(self) -> None:
+    def freeformselect_tool_start(self) -> None:
         ...
     
-    def doublylinkedlist_tool(self) -> None:
+    def freeformselect_tool_during(self) -> None:
         ...
     
-    def stack_tool(self) -> None:
+    def freeformselect_tool_end(self) -> None:
         ...
     
-    def queue_tool(self) -> None:
+    def fill_tool_start(self) -> None:
         ...
     
-    def binarytree_tool(self) -> None:
+    def fill_tool_during(self) -> None:
         ...
     
-    def heap_tool(self) -> None:
+    def fill_tool_end(self) -> None:
         ...
     
-    def hashtable_tool(self) -> None:
+    def text_tool_start(self) -> None:
         ...
     
-    def graph_tool(self) -> None:
+    def text_tool_during(self) -> None:
+        ...
+    
+    def text_tool_end(self) -> None:
+        ...
+    
+    def shape_tool_start(self) -> None:
+        ...
+    
+    def shape_tool_during(self) -> None:
+        ...
+    
+    def shape_tool_end(self) -> None:
         ...
 
     def file_expand(self) -> None:
