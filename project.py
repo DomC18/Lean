@@ -175,11 +175,42 @@ class ProjectContainer(ctk.CTkFrame):
     def __init__(self, window:ctk.CTk, width=constants.WIDTH, height=constants.HEIGHT, bg_color=constants.MAROON, projects:list=[], proj_idx:int=-1, **kwargs) -> None:
         super().__init__(master=window, width=width, height=height, bg_color=bg_color, **kwargs)
         self.window = window
-        self.width = width
-        self.height = height
-        self.bg_color = bg_color
         self.projects = projects
         self.proj_idx = proj_idx
+
+        self.func_dict = {
+            "select": self.select_tool, 
+            "pencil": self.pencil_tool, 
+            "erase": self.erase_tool,
+            "freeformselect": self.freeformselect_tool,
+            "fill": self.fill_tool,
+            "text": self.text_tool,
+            "line": self.line_tool,
+            "circle": self.circle_tool,
+            "rectangle": self.rectangle_tool,
+            "roundedrectangle": self.roundedrectangle_tool,
+            "triangle": self.triangle_tool,
+            "righttriangle": self.righttriangle_tool,
+            "diamond": self.diamond_tool,
+            "pentagon": self.pentagon_tool,
+            "hexagon": self.hexagon_tool,
+            "rightarrow": self.rightarrow_tool,
+            "leftarrow": self.leftarrow_tool,
+            "uparrow": self.uparrow_tool,
+            "downarrow": self.downarrow_tool,
+            "fourpointstar": self.fourpointstar_tool,
+            "fivepointstar": self.fivepointstar_tool,
+            "array": self.array_tool,
+            "twodimensionalarray": self.twodimensionalarray_tool,
+            "singlylinkedlist": self.singlylinkedlist_tool,
+            "doublylinkedlist": self.doublylinkedlist_tool,
+            "stack": self.stack_tool,
+            "queue": self.queue_tool,
+            "binarytree": self.binarytree_tool,
+            "heap": self.heap_tool,
+            "hashtable": self.hashtable_tool,
+            "graph": self.graph_tool
+        }
 
         self.curr_tool = "select"
         self.curr_tool_selected = None
@@ -370,24 +401,24 @@ class ProjectContainer(ctk.CTkFrame):
         self.array_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="ar", border_color="black")
         self.array_button.configure(command=lambda t="array", b=self.array_button : self.choose_tool(t,b))
         self.array_button.place(anchor="center", relx=0.1, rely=0.25)
-        self.twodarray_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="2r", border_color="black")
-        self.twodarray_button.configure(command=lambda t="twodarray", b=self.twodarray_button : self.choose_tool(t,b))
-        self.twodarray_button.place(anchor="center", relx=0.3, rely=0.25)
-        self.singlyll_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="sl", border_color="black")
-        self.singlyll_button.configure(command=lambda t="singlyll", b=self.singlyll_button : self.choose_tool(t,b))
-        self.singlyll_button.place(anchor="center", relx=0.5, rely=0.25)
-        self.doublyll_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="dl", border_color="black")
-        self.doublyll_button.configure(command=lambda t="doublyll", b=self.doublyll_button : self.choose_tool(t,b))
-        self.doublyll_button.place(anchor="center", relx=0.7, rely=0.25)
+        self.twodimensionalarray_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="2r", border_color="black")
+        self.twodimensionalarray_button.configure(command=lambda t="twodimensionalarray", b=self.twodimensionalarray_button : self.choose_tool(t,b))
+        self.twodimensionalarray_button.place(anchor="center", relx=0.3, rely=0.25)
+        self.singlylinkedlist_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="sl", border_color="black")
+        self.singlylinkedlist_button.configure(command=lambda t="singlylinkedlist", b=self.singlylinkedlist_button : self.choose_tool(t,b))
+        self.singlylinkedlist_button.place(anchor="center", relx=0.5, rely=0.25)
+        self.doublylinkedlist_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="dl", border_color="black")
+        self.doublylinkedlist_button.configure(command=lambda t="doublylinkedlist", b=self.doublylinkedlist_button : self.choose_tool(t,b))
+        self.doublylinkedlist_button.place(anchor="center", relx=0.7, rely=0.25)
         self.stack_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="st", border_color="black")
         self.stack_button.configure(command=lambda t="stack", b=self.stack_button : self.choose_tool(t,b))
         self.stack_button.place(anchor="center", relx=0.9, rely=0.25)
         self.queue_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="qu", border_color="black")
         self.queue_button.configure(command=lambda t="queue", b=self.queue_button : self.choose_tool(t,b))
         self.queue_button.place(anchor="center", relx=0.1, rely=0.75)
-        self.bintree_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="bt", border_color="black")
-        self.bintree_button.configure(command=lambda t="bintree", b=self.bintree_button : self.choose_tool(t,b))
-        self.bintree_button.place(anchor="center", relx=0.3, rely=0.75)
+        self.binarytree_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="bt", border_color="black")
+        self.binarytree_button.configure(command=lambda t="binarytree", b=self.binarytree_button : self.choose_tool(t,b))
+        self.binarytree_button.place(anchor="center", relx=0.3, rely=0.75)
         self.heap_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="hp", border_color="black")
         self.heap_button.configure(command=lambda t="heap", b=self.heap_button : self.choose_tool(t,b))
         self.heap_button.place(anchor="center", relx=0.5, rely=0.75)
@@ -397,7 +428,110 @@ class ProjectContainer(ctk.CTkFrame):
         self.graph_button = ctk.CTkButton(master=self.advshapes_frame, width=width*0.22*0.2, height=height*0.15*0.5, fg_color=bg_color, border_width=1, text="gr", border_color="black")
         self.graph_button.configure(command=lambda t="graph", b=self.graph_button : self.choose_tool(t,b))
         self.graph_button.place(anchor="center", relx=0.9, rely=0.75)
+
+        self.handling_id = self.window.after(50, self.handle_tool)
     
+    def handle_tool(self) -> None:
+        try: tool_handler = self.func_dict[self.curr_tool]
+        except:
+            print("No function found")
+            return
+    
+        tool_handler()
+
+    def select_tool(self) -> None:
+        ...
+    
+    def pencil_tool(self) -> None:
+        ...
+    
+    def erase_tool(self) -> None:
+        ...
+    
+    def freeformselect_tool(self) -> None:
+        ...
+    
+    def fill_tool(self) -> None:
+        ...
+    
+    def text_tool(self) -> None:
+        ...
+    
+    def line_tool(self) -> None:
+        ...
+    
+    def circle_tool(self) -> None:
+        ...
+    
+    def rectangle_tool(self) -> None:
+        ...
+    
+    def roundedrectangle_tool(self) -> None:
+        ...
+    
+    def triangle_tool(self) -> None:
+        ...
+    
+    def righttriangle_tool(self) -> None:
+        ...
+    
+    def diamond_tool(self) -> None:
+        ...
+    
+    def pentagon_tool(self) -> None:
+        ...
+    
+    def hexagon_tool(self) -> None:
+        ...
+    
+    def rightarrow_tool(self) -> None:
+        ...
+    
+    def leftarrow_tool(self) -> None:
+        ...
+
+    def uparrow_tool(self) -> None:
+        ...
+    
+    def downarrow_tool(self) -> None:
+        ...
+    
+    def fourpointstar_tool(self) -> None:
+        ...
+    
+    def fivepointstar_tool(self) -> None:
+        ...
+    
+    def array_tool(self) -> None:
+        ...
+    
+    def twodimensionalarray_tool(self) -> None:
+        ...
+    
+    def singlylinkedlist_tool(self) -> None:
+        ...
+    
+    def doublylinkedlist_tool(self) -> None:
+        ...
+    
+    def stack_tool(self) -> None:
+        ...
+    
+    def queue_tool(self) -> None:
+        ...
+    
+    def binarytree_tool(self) -> None:
+        ...
+    
+    def heap_tool(self) -> None:
+        ...
+    
+    def hashtable_tool(self) -> None:
+        ...
+    
+    def graph_tool(self) -> None:
+        ...
+
     def file_expand(self) -> None:
         self.file_button.configure(command=lambda e=None : self.file_collapse(e))
         self.new_button.place(anchor="w", relx=0, rely=0.145)
@@ -583,3 +717,4 @@ class ProjectContainer(ctk.CTkFrame):
 
     def destruct(self) -> None:
         self.destroy()
+        self.window.after_cancel(self.handling_id)

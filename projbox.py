@@ -23,7 +23,7 @@ class ProjBox(tk.Frame):
 
     def insert(self, idx:int, proj:Project) -> None:
         y_multiplier = 0.00175+(idx*0.13875)        
-        name_select = tk.Button(self.canvas, text=proj.name, font=('Arial', 50, "bold"), bg=self.bg)
+        name_select = tk.Button(self.canvas, text=proj.name, font=('Arial', 48, "bold"), bg=self.bg)
         name_select.configure(command=lambda p=proj.name : self.select_proj(p))
         name_select.place(relx=0.001, rely=y_multiplier, anchor="nw")
 

@@ -7,6 +7,12 @@
         {
             "proj1": {
                 "name": "proj1",
+                "elements": []
+            }
+        },
+        {
+            "proj2": {
+                "name": "proj2",
                 "elements": [
                     {
                         "typ": "label",
@@ -105,12 +111,6 @@
                         }
                     }
                 ]
-            }
-        },
-        {
-            "proj2": {
-                "name": "proj2",
-                "elements": []
             }
         },
         {
