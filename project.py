@@ -177,6 +177,35 @@ class ProjectContainer(ctk.CTkFrame):
         self.window = window
         self.projects = projects
         self.proj_idx = proj_idx
+        self.bg_color = bg_color
+
+        self.shape_dict = {
+            "line": 0,#ctk.CTkImage(),
+            "circle": 1,#ctk.CTkImage(),
+            "rectangle": 2,#ctk.CTkImage(),
+            "roundedrectangle": 3,#ctk.CTkImage(),
+            "triangle": 4,#ctk.CTkImage(),
+            "righttriangle": 5,#ctk.CTkImage(),
+            "diamond": 6,#ctk.CTkImage(),
+            "pentagon": 7,#ctk.CTkImage(),
+            "hexagon": 8,#ctk.CTkImage(),
+            "rightarrow": 9,#ctk.CTkImage(),
+            "leftarrow": 10,#ctk.CTkImage(),
+            "uparrow": 11,#ctk.CTkImage(),
+            "downarrow": 12,#ctk.CTkImage(),
+            "fourpointstar": 13,#ctk.CTkImage(),
+            "fivepointstar": 14,#ctk.CTkImage(),
+            "array": 15,#ctk.CTkImage(),
+            "twodimensionalarray": 16,#ctk.CTkImage(),
+            "singlylinkedlist": 17,#ctk.CTkImage(),
+            "doublylinkedlist": 18,#ctk.CTkImage(),
+            "stack": 19,#ctk.CTkImage(),
+            "queue": 20,#ctk.CTkImage(),
+            "binarytree": 21,#ctk.CTkImage(),
+            "heap": 22,#ctk.CTkImage(),
+            "hashtable": 23,#ctk.CTkImage(),
+            "graph": 24#ctk.CTkImage()
+        }
 
         self.func_dict = {
             "select": [self.select_tool_start,self.select_tool_during,self.select_tool_end],
@@ -211,8 +240,10 @@ class ProjectContainer(ctk.CTkFrame):
         }
 
         self.mouse_held = False
+        self.enter_held = False
         self.mouse_x = 0
         self.mouse_y = 0
+        self.mouse_widget = None
         self.start_x = 0
         self.start_y = 0
         self.end_x = 0
@@ -223,12 +254,21 @@ class ProjectContainer(ctk.CTkFrame):
         self.prev_y = 0
         self.select_box_width = 0
         self.select_box_height = 0
+        self.shape_box_width = 0
+        self.shape_box_height = 0
+        self.prev_length = 0
+        self.text_length = 16
+        self.text_size = 28
+        self.text_boxes = []
+        self.curr_entry = None
+        self.entry_placed = False
 
         self.started_tool = False
-        self.curr_tool = "select"
+        self.curr_tool = "pencil"
         self.curr_tool_selected = None
         self.curr_color = "black"
         self.curr_color_selected = None
+        self.curr_shape = None
 
         self.util_frame = ctk.CTkFrame(master=self, width=width, height=height*0.1, fg_color=bg_color, border_width=3)
         self.util_frame.place(anchor="n", relx=0.5, rely=0)
@@ -236,9 +276,10 @@ class ProjectContainer(ctk.CTkFrame):
         self.mass_frame.place(anchor="n", relx=0.5, rely=0.1)
         self.drawing_frame = ctk.CTkFrame(master=self, width=width, height=height*0.72, fg_color=bg_color, border_width=3)
         self.drawing_frame.place(anchor="n", relx=0.5, rely=0.28)
-        self.drawing_canvas = ctk.CTkCanvas(master=self.drawing_frame, width=width, height=height*0.72, bg=constants.MAROON)
+        self.drawing_canvas = ctk.CTkCanvas(master=self.drawing_frame, width=width, height=height*0.72, bg=bg_color)
         self.drawing_canvas.place(anchor="center", relx=0.5, rely=0.5)
         self.select_box = ctk.CTkLabel(master=self.drawing_canvas, text="", corner_radius=1, fg_color=constants.DARKMAROON)
+        self.shape_box = ctk.CTkLabel(master=self.drawing_canvas, text="", corner_radius=1, fg_color=constants.DARKMAROON)
 
         self.file_button = ctk.CTkButton(master=self.util_frame, width=width*0.1, height=height*0.095, fg_color=bg_color, text="File", font=("Arial", 50, "bold"), border_width=1)
         self.file_button.configure(command=self.file_expand)
@@ -289,10 +330,10 @@ class ProjectContainer(ctk.CTkFrame):
         self.erase_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="Erase", border_color="black")
         self.erase_button.configure(command=lambda t="erase", b=self.erase_button : self.choose_tool(t,b))
         self.erase_button.place(anchor="center", relx=0.25, rely=5/6)
-        self.text_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="A", border_color="black")
+        self.text_button = ctk.CTkButton(master=self.tool_frame, width=width*0.22*0.5, height=height*0.15*0.33, fg_color=bg_color, border_width=1, text="Text", border_color="black")
         self.text_button.configure(command=lambda t="text", b=self.text_button : self.choose_tool(t,b))
         self.text_button.place(anchor="center", relx=0.75, rely=1/6)
-        self.choose_tool(tool="select", button=self.select_button)
+        self.choose_tool(tool="pencil", button=self.pencil_button)
 
         self.color_frame = ctk.CTkFrame(master=self.mass_frame, width=width*0.25, height=height*0.1795, fg_color=bg_color, border_width=3)
         self.color_frame.place(anchor="center", relx=0.375, rely=0.5)
@@ -443,16 +484,25 @@ class ProjectContainer(ctk.CTkFrame):
         self.window.bind("<ButtonPress-1>", self.mouse_clicked)
         self.window.bind("<ButtonRelease-1>", self.mouse_idle)
         self.window.bind("<B1-Motion>", self.mouse_clicked)
+        self.window.bind('<Return>', self.enter_clicked)
+        self.window.bind('<KeyRelease-Return>', self.enter_idle)
     
     def mouse_clicked(self, event) -> None: 
         self.mouse_held = True
         self.mouse_x = event.x
         self.mouse_y = event.y
+        self.mouse_widget = event.widget
     
     def mouse_idle(self, event) -> None:
         self.mouse_held = False
         self.mouse_x = event.x
         self.mouse_y = event.y
+
+    def enter_clicked(self, event) -> None:
+        self.enter_held = True
+    
+    def enter_idle(self, event) -> None:
+        self.enter_held = False
 
     def handle_tool(self) -> None:
         try:
@@ -466,11 +516,15 @@ class ProjectContainer(ctk.CTkFrame):
         self.window.after(20, self.handle_tool)
 
     def select_tool_start(self) -> None:
+        if self.mouse_widget != self.drawing_canvas and self.mouse_widget not in self.drawing_canvas.winfo_children():
+            return
         if not self.started_tool:
             if self.mouse_held:
                 try:
                     self.select_box.place_forget()
                     self.select_box.configure(width=0, height=0)
+                    self.shape_box.place_forget()
+                    self.shape_box.configure(width=0, height=0)
                 except: pass
 
                 self.started_tool = True
@@ -517,11 +571,15 @@ class ProjectContainer(ctk.CTkFrame):
         self.start_y = 0
 
     def pencil_tool_start(self) -> None:
+        if self.mouse_widget != self.drawing_canvas and self.mouse_widget not in self.drawing_canvas.winfo_children():
+            return
         if not self.started_tool:
             if self.mouse_held:
                 try:
                     self.select_box.place_forget()
                     self.select_box.configure(width=0, height=0)
+                    self.shape_box.place_forget()
+                    self.shape_box.configure(width=0, height=0)
                 except: pass
 
                 self.started_tool = True
@@ -540,7 +598,7 @@ class ProjectContainer(ctk.CTkFrame):
             self.curr_x = self.mouse_x
             self.curr_y = self.mouse_y
 
-            self.drawing_canvas.create_line(self.prev_x, self.prev_y, self.curr_x, self.curr_y)
+            self.drawing_canvas.create_line(self.prev_x, self.prev_y, self.curr_x, self.curr_y, fill=self.curr_color, width=20)
 
             self.prev_x = self.curr_x
             self.prev_y = self.curr_y
@@ -555,11 +613,15 @@ class ProjectContainer(ctk.CTkFrame):
         self.prev_y = 0
     
     def erase_tool_start(self) -> None:
+        if self.mouse_widget != self.drawing_canvas and self.mouse_widget not in self.drawing_canvas.winfo_children():
+            return
         if not self.started_tool:
             if self.mouse_held:
                 try:
                     self.select_box.place_forget()
                     self.select_box.configure(width=0, height=0)
+                    self.shape_box.place_forget()
+                    self.shape_box.configure(width=0, height=0)
                 except: pass
 
                 self.started_tool = True
@@ -578,7 +640,7 @@ class ProjectContainer(ctk.CTkFrame):
             self.curr_x = self.mouse_x
             self.curr_y = self.mouse_y
 
-            self.drawing_canvas.create_line(self.prev_x, self.prev_y, self.curr_x, self.curr_y, fill=constants.MAROON, width=10)
+            self.drawing_canvas.create_line(self.prev_x, self.prev_y, self.curr_x, self.curr_y, fill=constants.MAROON, width=50)
 
             self.prev_x = self.curr_x
             self.prev_y = self.curr_y
@@ -591,24 +653,117 @@ class ProjectContainer(ctk.CTkFrame):
         self.curr_y = 0
         self.prev_x = 0
         self.prev_y = 0
-    
+
     def text_tool_start(self) -> None:
-        ...
+        if self.mouse_widget != self.drawing_canvas and self.mouse_widget not in self.drawing_canvas.winfo_children():
+            return
+        if not self.started_tool:
+            if self.mouse_held:
+                try:
+                    self.select_box.place_forget()
+                    self.select_box.configure(width=0, height=0)
+                    self.shape_box.place_forget()
+                    self.shape_box.configure(width=0, height=0)
+                except: pass
+
+                self.started_tool = True
+                self.start_x = self.mouse_x
+                self.start_y = self.mouse_y
+            return
+        self.text_tool_during()
     
     def text_tool_during(self) -> None:
-        ...
-    
+        if not self.enter_held:
+            if not self.curr_entry:
+                self.curr_entry = ctk.CTkEntry(master=self.drawing_canvas, width=self.text_length, height=40, font=("Times New Roman", self.text_size, "bold"))
+                self.curr_entry.focus_set()
+                self.prev_length = self.text_length
+                return
+
+            if len(self.curr_entry.get()) > 0:
+                if len(self.curr_entry.get()) != self.prev_length:
+                    self.curr_entry.configure(width=len(self.curr_entry.get())*self.text_length)
+            elif len(self.curr_entry.get()) == 0 and self.prev_length != 0:
+                self.curr_entry.configure(width=self.text_length)
+            self.prev_length = len(self.curr_entry.get())
+        
+            if not self.entry_placed:
+                self.curr_entry.place(anchor="center", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+                self.entry_placed = True
+            return
+        self.text_tool_end()
+
     def text_tool_end(self) -> None:
-        ...
+        self.new_label = ctk.CTkLabel(master=self.drawing_canvas, width=len(self.curr_entry.get())*self.text_length, height=40, font=("Times New Roman", self.text_size, "bold"), text=self.curr_entry.get())
+        self.text_boxes.append(self.new_label)
+        self.new_label.place(anchor="center", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+        self.curr_entry.destroy()
+
+        self.curr_entry = None
+        self.entry_placed = False
+        self.started_tool = False
+        self.prev_length = 0
+        self.start_x = 0
+        self.start_y = 0
     
     def shape_tool_start(self) -> None:
-        ...
+        self.curr_shape = self.shape_dict[self.curr_tool]
+        if self.mouse_widget != self.drawing_canvas and self.mouse_widget not in self.drawing_canvas.winfo_children():
+            return
+        if not self.started_tool:
+            if self.mouse_held:
+                try:
+                    self.select_box.place_forget()
+                    self.select_box.configure(width=0, height=0)
+                    self.shape_box.place_forget()
+                    self.shape_box.configure(width=0, height=0)
+                except: pass
+
+                self.started_tool = True
+                self.start_x = self.mouse_x
+                self.start_y = self.mouse_y
+            return
+        self.shape_tool_during()
     
     def shape_tool_during(self) -> None:
-        ...
+        if self.mouse_held:
+            self.end_x = self.mouse_x
+            self.end_y = self.mouse_y
+            
+            self.shape_box.place_forget()
+            self.shape_box_width = 0
+            self.shape_box_height = 0
+            if self.end_x-self.start_x > 0:
+                self.shape_box_width = self.end_x-self.start_x
+                if self.end_y-self.start_y > 0:
+                    self.shape_box_height = self.end_y-self.start_y
+                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                    self.shape_box.place(anchor="nw", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+                else:
+                    self.shape_box_height = self.start_y-self.end_y
+                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                    self.shape_box.place(anchor="sw", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+            else:
+                self.shape_box_width = self.start_x-self.end_x
+                if self.end_y-self.start_y > 0:
+                    self.shape_box_height = self.end_y-self.start_y
+                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                    self.shape_box.place(anchor="ne", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+                else:
+                    self.shape_box_height = self.start_y-self.end_y
+                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                    self.shape_box.place(anchor="se", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+            return
+        
+        self.shape_tool_end()
     
     def shape_tool_end(self) -> None:
         ...
+
+        self.started_tool = False
+        self.curr_shape = None
+        self.start_x = 0
+        self.start_y = 0
 
     def file_expand(self) -> None:
         self.file_button.configure(command=lambda e=None : self.file_collapse(e))
@@ -796,3 +951,4 @@ class ProjectContainer(ctk.CTkFrame):
     def destruct(self) -> None:
         self.destroy()
         self.window.after_cancel(self.handling_id)
+        self.window.unbind_all()

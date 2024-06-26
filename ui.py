@@ -44,11 +44,7 @@ def login_screen() -> None:
     password_entry.place(relx=0.515, rely=0.675, anchor="w")
     login_button = ctk.CTkButton(gv.window, text="Login/Register", font=("Arial", 90, "bold"), width=15, height=75, command=lambda r=gv.window, f=firstname_entry, u=username_entry, p=password_entry, fl=firstname_label, ul=username_label, pl=password_label, func=project_select : verify_existing(r,f,u,p,fl,ul,pl,func))
     login_button.place(relx=0.5, rely=0.95, anchor="s")
-
-    def exit(event) -> None:
-        gv.window.destroy()
-
-    gv.window.bind("<Escape>", exit)
+    
     gv.window.mainloop()
 
 def project_select() -> None:
