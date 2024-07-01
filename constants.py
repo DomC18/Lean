@@ -3,6 +3,8 @@ import os
 PUBLICDIR = r"C:\Users\Public\Desktop"
 HOMEDIR = os.getcwd()
 USERDATADIR = HOMEDIR + r"\UserData\\"
+ICONDIR = HOMEDIR + r"\Icons\\"
+RECTANGLEIMAGE = ICONDIR + r"rectangle.png"
 
 WIDTH = 1734
 HEIGHT = 975

@@ -1,4 +1,5 @@
 from screeninfo import get_monitors
+from PIL import Image, ImageTk
 from tkinter import messagebox
 import globalvariables as gv
 import customtkinter as ctk
@@ -182,7 +183,7 @@ class ProjectContainer(ctk.CTkFrame):
         self.shape_dict = {
             "line": 0,#ctk.CTkImage(),
             "circle": 1,#ctk.CTkImage(),
-            "rectangle": 2,#ctk.CTkImage(),
+            "rectangle": constants.RECTANGLEIMAGE,
             "roundedrectangle": 3,#ctk.CTkImage(),
             "triangle": 4,#ctk.CTkImage(),
             "righttriangle": 5,#ctk.CTkImage(),
@@ -256,8 +257,10 @@ class ProjectContainer(ctk.CTkFrame):
         self.select_box_height = 0
         self.shape_box_width = 0
         self.shape_box_height = 0
+        self.img = None
+        self.img_photo = None
         self.prev_length = 0
-        self.text_length = 16
+        self.text_length = 11
         self.text_size = 28
         self.text_boxes = []
         self.curr_entry = None
@@ -675,16 +678,16 @@ class ProjectContainer(ctk.CTkFrame):
     def text_tool_during(self) -> None:
         if not self.enter_held:
             if not self.curr_entry:
-                self.curr_entry = ctk.CTkEntry(master=self.drawing_canvas, width=self.text_length, height=40, font=("Times New Roman", self.text_size, "bold"))
+                self.curr_entry = ctk.CTkEntry(master=self.drawing_canvas, width=self.text_length+25, height=40, font=("Times New Roman", self.text_size, "bold"))
                 self.curr_entry.focus_set()
-                self.prev_length = self.text_length
+                self.prev_length = self.text_length+25
                 return
 
             if len(self.curr_entry.get()) > 0:
                 if len(self.curr_entry.get()) != self.prev_length:
-                    self.curr_entry.configure(width=len(self.curr_entry.get())*self.text_length)
+                    self.curr_entry.configure(width=len(self.curr_entry.get())*self.text_length+25)
             elif len(self.curr_entry.get()) == 0 and self.prev_length != 0:
-                self.curr_entry.configure(width=self.text_length)
+                self.curr_entry.configure(width=self.text_length+25)
             self.prev_length = len(self.curr_entry.get())
         
             if not self.entry_placed:
@@ -694,7 +697,7 @@ class ProjectContainer(ctk.CTkFrame):
         self.text_tool_end()
 
     def text_tool_end(self) -> None:
-        self.new_label = ctk.CTkLabel(master=self.drawing_canvas, width=len(self.curr_entry.get())*self.text_length, height=40, font=("Times New Roman", self.text_size, "bold"), text=self.curr_entry.get())
+        self.new_label = ctk.CTkLabel(master=self.drawing_canvas, width=len(self.curr_entry.get())*self.text_length+25, height=40, font=("Times New Roman", self.text_size, "bold"), text=self.curr_entry.get())
         self.text_boxes.append(self.new_label)
         self.new_label.place(anchor="center", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
         self.curr_entry.destroy()
@@ -729,41 +732,63 @@ class ProjectContainer(ctk.CTkFrame):
         if self.mouse_held:
             self.end_x = self.mouse_x
             self.end_y = self.mouse_y
-            
+
+            self.img = Image.open(self.curr_shape)
             self.shape_box.place_forget()
             self.shape_box_width = 0
             self.shape_box_height = 0
-            if self.end_x-self.start_x > 0:
-                self.shape_box_width = self.end_x-self.start_x
-                if self.end_y-self.start_y > 0:
-                    self.shape_box_height = self.end_y-self.start_y
-                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
-                    self.shape_box.place(anchor="nw", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
-                else:
-                    self.shape_box_height = self.start_y-self.end_y
-                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
-                    self.shape_box.place(anchor="sw", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
-            else:
-                self.shape_box_width = self.start_x-self.end_x
-                if self.end_y-self.start_y > 0:
-                    self.shape_box_height = self.end_y-self.start_y
-                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
-                    self.shape_box.place(anchor="ne", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
-                else:
-                    self.shape_box_height = self.start_y-self.end_y
-                    self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
-                    self.shape_box.place(anchor="se", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+            try:
+                self.layout_shape()
+            except Exception as e:
+                print(f"Error while resizing image: \n{e}")
             return
         
         self.shape_tool_end()
-    
-    def shape_tool_end(self) -> None:
-        ...
 
+    def shape_tool_end(self) -> None:
+        self.img = None
+        self.img_photo = None
         self.started_tool = False
         self.curr_shape = None
         self.start_x = 0
         self.start_y = 0
+
+    def layout_shape(self) -> None:
+        if self.end_x-self.start_x > 0:
+            self.shape_box_width = self.end_x-self.start_x
+            if self.end_y-self.start_y > 0:
+                self.shape_box_height = self.end_y-self.start_y
+                self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                self.img = self.img.resize((self.shape_box_width, self.shape_box_height), Image.Resampling.LANCZOS)
+                self.img_photo = ctk.CTkImage(self.img, self.img, size=(self.shape_box_width, self.shape_box_height))
+                self.shape_box.configure(image=self.img_photo)
+                self.shape_box.place(anchor="nw", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+            else:
+                self.shape_box_height = self.start_y-self.end_y
+                self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                if self.shape_box_height != 0:
+                    self.img = self.img.resize((self.shape_box_width, self.shape_box_height), Image.Resampling.LANCZOS)
+                    self.img_photo = ctk.CTkImage(self.img, self.img, size=(self.shape_box_width, self.shape_box_height))
+                    self.shape_box.configure(image=self.img_photo)
+                self.shape_box.place(anchor="sw", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+        else:
+            self.shape_box_width = self.start_x-self.end_x
+            if self.end_y-self.start_y > 0:
+                self.shape_box_height = self.end_y-self.start_y
+                self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                self.img = self.img.resize((self.shape_box_width, self.shape_box_height), Image.Resampling.LANCZOS)
+                self.img_photo = ctk.CTkImage(self.img, self.img, size=(self.shape_box_width, self.shape_box_height))
+                self.shape_box.configure(image=self.img_photo)
+                self.shape_box.place(anchor="ne", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+            else:
+                self.shape_box_height = self.start_y-self.end_y
+                self.shape_box.configure(width=self.shape_box_width, height=self.shape_box_height)
+                if self.shape_box_height != 0:
+                    self.img = self.img.resize((self.shape_box_width, self.shape_box_height), Image.Resampling.LANCZOS)
+                    self.img_photo = ctk.CTkImage(self.img, self.img, size=(self.shape_box_width, self.shape_box_height))
+                    self.shape_box.configure(image=self.img_photo)
+                self.shape_box.place(anchor="se", relx=self.start_x/constants.WIDTH, rely=self.start_y/((1-0.2795)*constants.HEIGHT))
+
 
     def file_expand(self) -> None:
         self.file_button.configure(command=lambda e=None : self.file_collapse(e))
